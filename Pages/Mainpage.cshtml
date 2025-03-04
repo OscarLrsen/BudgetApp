@@ -35,31 +35,34 @@
     </form>
 </div>
 
-<form method="post">
-    <h1>Expenses</h1>
-    <fieldset style="display: flex; flex-direction: column; gap: 10px; max-width: 300px;">
-        <label for="expenseTitle">Expense Title</label>
-        <input type="text" placeholder="Enter Title Of Product" id="expenseTitle" name="ExpenseTitle" required>
-        
-        <label for="expenseAmount">Amount</label>
-        <input type="number" placeholder="Enter Amount" id="expenseAmount" name="ExpenseAmount" required>
-        
-        <label for="expenseDate">Date</label>
-        <input type="datetime-local" id="expenseDate" name="ExpenseDate" required>
-        
-        <label for="expenseCategory">Category</label>
-        <select id="expenseCategory" name="ExpenseCategory" required>
-            <option value="1">Food</option>
-            <option value="2">Transport</option>
-            <option value="2">Utilities</option>
-            <option value="4">Entertainment</option>
-            <option value="5">Other</option>
-            <option value="6">Amsterdam</option>
-        </select>
-        
-        <button type="submit" style="width: 120px; height: 35px; white-space: nowrap; border-radius:50px; background-color: red; color: white;">Add Expense</button>
-    </fieldset>
-</form>
+<div class="box">
+    <form method="post">
+        <h1>Expenses</h1>
+        <fieldset style="display: flex; flex-direction: column; gap: 10px; max-width: 300px;">
+            <label for="expenseTitle">Expense Title</label>
+            <input type="text" placeholder="Enter Title Of Product" id="expenseTitle" name="ExpenseTitle" required>
+
+            <label for="expenseAmount">Amount</label>
+            <input type="number" placeholder="Enter Amount" id="expenseAmount" name="ExpenseAmount" required>
+
+            <label for="expenseDate">Date</label>
+            <input type="datetime-local" id="expenseDate" name="ExpenseDate" required>
+
+            <label for="expenseCategory">Category</label>
+            <select id="expenseCategory" name="ExpenseCategory" required>
+                <option value="1">Food</option>
+                <option value="2">Transport</option>
+                <option value="3">Utilities</option>
+                <option value="4">Entertainment</option>
+                <option value="5">Other</option>
+                <option value="6">Amsterdam</option>
+            </select>
+
+            <button type="submit" style="width: 120px; height: 35px; white-space: nowrap; border-radius:50px; background-color: red; color: white;">Add Expense</button>
+        </fieldset>
+    </form>
+</div>
+
 
 
 <style>
@@ -79,6 +82,41 @@
         text-align: center;
     }
 </style>
+
+
+
+
+<div class="box">
+    <form method="post">
+        <h1>Expenses</h1>
+        <fieldset style="display: flex; flex-direction: column; gap: 10px; max-width: 300px;">
+            <label for="expense">Expense</label>
+            <input type="number" placeholder="Enter Title Of Product" id="expense" name="expense" required>
+            <input type="number" placeholder="Enter Cost Of Product" id="expense" name="expense" required>
+            <button type="submit" style="width: 120px; height: 35px; white-space: nowrap; border-radius:50px; background-color: red; color: white;">Add Expense</button>
+        </fieldset>
+    </form>
+</div>
+
+
+<style>
+    body {
+        background: linear-gradient(to right, #e2e2e2, #c9d6ff);
+    }
+
+    .register-container {
+        width: 350px;
+        padding: 20px;
+        background-color: #f8f9fa;
+        border: 1px solid #ccc;
+        border-radius: 5px;
+        box-shadow: 2px 2px 10px rgba(0, 0, 0, 0.1);
+        background-color: white;
+        margin: 50px auto;
+        text-align: center;
+    }
+</style>
+
 
 
 
