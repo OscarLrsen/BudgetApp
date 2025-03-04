@@ -4,8 +4,9 @@ namespace BudgetApp.Models
 {
     public class User : IdentityUser
     {
-        public int TransactionId { get; set; }
-        public List<Transaction> Transactions { get; set; } = new(); // Navigation property, gör det lättare att hämta data
+        //Lägg till här om det behövs fler properties i User!!
+        public int ExpenseId { get; set; }
+        public List<Expense> Transactions { get; set; } = new(); // Navigation property, gör det lättare att hämta data
 
     }
 }

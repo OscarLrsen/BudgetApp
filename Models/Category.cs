@@ -3,8 +3,10 @@
     public class Category
     {
         public int Id { get; set; }
-        public string? Name { get; set; }
+        public string Name { get; set; }
 
-        public List<Transaction> Transactions { get; set; } = new();
+
+        public int ExpenseId { get; set; }
+        public List<Expense> Expenses { get; set; } = new();
     }
 }
