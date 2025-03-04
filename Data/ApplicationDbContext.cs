@@ -10,6 +10,6 @@ public class ApplicationDbContext : IdentityDbContext<User>
         : base(options)
     {
     }
-    public DbSet<Transaction> Transactions { get; set; } // DbSet sparas i databasen
+    public DbSet<Expense> Expenses { get; set; } // DbSet sparas i databasen
     public DbSet<Category> Categories { get; set; }
 }
