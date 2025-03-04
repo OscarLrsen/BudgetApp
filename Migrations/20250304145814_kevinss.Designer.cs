@@ -9,11 +9,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
 
-namespace BudgetApp.Data.Migrations
+namespace BudgetApp.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20250304101724_nytableddbd")]
-    partial class nytableddbd
+    [Migration("20250304145814_kevinss")]
+    partial class kevinss
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -32,6 +32,9 @@ namespace BudgetApp.Data.Migrations
                         .HasColumnType("int");
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<int>("ExpenseId")
+                        .HasColumnType("int");
 
                     b.Property<string>("Name")
                         .IsRequired()
@@ -280,7 +283,7 @@ namespace BudgetApp.Data.Migrations
             modelBuilder.Entity("BudgetApp.Models.Expense", b =>
                 {
                     b.HasOne("BudgetApp.Models.Category", "Category")
-                        .WithMany("Transactions")
+                        .WithMany("Expenses")
                         .HasForeignKey("CategoryId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
@@ -349,7 +352,7 @@ namespace BudgetApp.Data.Migrations
 
             modelBuilder.Entity("BudgetApp.Models.Category", b =>
                 {
-                    b.Navigation("Transactions");
+                    b.Navigation("Expenses");
                 });
 
             modelBuilder.Entity("BudgetApp.Models.User", b =>
