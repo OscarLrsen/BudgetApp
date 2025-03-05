@@ -106,37 +106,7 @@
 
 
 <div class="container">
-<<<<<<< HEAD
     <div class="budgetbox">
-=======
-<div class="budgetbox">
-    <form method="post">
-        <h1>Budget</h1>
-        <fieldset style="display: flex; flex-direction: column; gap: 10px; max-width: 300px;">
-            <label for="income">Income</label>
-            <input type="number" placeholder="Enter Total Amount"  id="income" name="income" required>
-            <button type="submit" style="width: 120px; height: 35px; white-space: nowrap; border-radius:50px; background-color: blue; color: white;">Set Budget</button>
-        </fieldset>
-    </form>
-</div>
-</div>
-
-<div class="box">
-    <form method="post">
-        <h1>Expenses</h1>
-        <fieldset style="display: flex; flex-direction: column; gap: 10px; max-width: 300px;">
-            <label for="expenseTitle">Expense Title</label>
-            <input type="text" placeholder="Enter Title Of Product" id="expenseTitle" name="ExpenseTitle" required>
-
-            <label for="expenseAmount">Amount</label>
-            <input type="number" placeholder="Enter Amount" id="expenseAmount" name="ExpenseAmount" required>
-
-            <label for="expenseDate">Date</label>
-            <input type="datetime-local" id="expenseDate" name="ExpenseDate" required>
-            </fieldset>
-
-    <div class="expensebox">
->>>>>>> Aleksander
         <form method="post">
             <h1>Budget</h1>
             <fieldset style="display: flex; flex-direction: column; gap: 10px; max-width: 300px;">
@@ -148,75 +118,68 @@
             </fieldset>
         </form>
     </div>
-</form>
+</div>
 
-    <div class="box">
-        <form method="post">
-            <h1>Expenses</h1>
-            <fieldset style="display: flex; flex-direction: column; gap: 10px; max-width: 300px;">
-                <label for="expenseTitle">Expense Title</label>
-                <input type="text" placeholder="Enter Title Of Product" id="expenseTitle" name="ExpenseTitle" required>
+<div class="expensebox">
+    <form method="post">
+        <h1>Expenses</h1>
+        <fieldset style="display: flex; flex-direction: column; gap: 10px; max-width: 300px;">
+            <label for="expenseName">Expense Title</label>
+            <input type="text" placeholder="Enter Title Of Product" id="expenseName" name="expenseName" required>
 
-                <label for="expenseAmount">Amount</label>
-                <input type="number" placeholder="Enter Amount" id="expenseAmount" name="ExpenseAmount" required>
+            <label for="expenseAmount">Amount</label>
+            <input type="number" placeholder="Enter Cost Of Product" id="expenseAmount" name="expenseAmount" required>
 
-                <label for="expenseDate">Date</label>
-                <input type="datetime-local" id="expenseDate" name="ExpenseDate" required>
-
-                <div class="expensebox">
-                    <form method="post">
-                        <h1>Expenses</h1>
-                        <fieldset style="display: flex; flex-direction: column; gap: 10px; max-width: 300px;">
-                            <label for="expense">Expense</label>
-                            <input type="text" placeholder="Enter Title Of Product" id="expense" name="expense"
-                                required>
-                            <input type="number" placeholder="Enter Cost Of Product" id="expense" name="expense"
-                                required>
-                            <button type="submit"
-                                style="width: 120px; height: 35px; white-space: nowrap; border-radius:50px; background-color: red; color: white;">Add
-                                Expense</button>
-                        </fieldset>
-                    </form>
-                </div>
-        </form>
+            <label for="expenseCategory">Category</label>
+            <select id="expenseCategory" name="expenseCategory" required>
+                @foreach (var category in Model.Categories)
+                {
+                    <option value="@category.Id">@category.Name</option>
+                }
+            </select>
+            <button type="submit"
+                style="width: 120px; height: 35px; white-space: nowrap; border-radius: 50px; background-color: red; color: white;">
+                Add Expense
+            </button>
+        </fieldset>
+    </form>
+</div>
+<div class="summary">
+    <div>Total Budget: 10000</div>
+    <div>Expenses: 4300</div>
+    <div>Balance: 5700</div>
+</div>
+<div class="expenses-list">
+    <h2>Expenses List</h2>
+    <div class="expense-item">
+        <span>Food</span>
+        <span>1000</span>
+        <div class="icons">
+            <i class='bx bx-edit'></i>
+            <i class='bx bx-trash'></i>
+        </div>
     </div>
-    <div class="summary">
-        <div>Total Budget: 10000</div>
-        <div>Expenses: 4300</div>
-        <div>Balance: 5700</div>
+    <div class="expense-item">
+        <span>Car</span>
+        <span>1500</span>
+        <div class="icons">
+            <i class='bx bx-edit'></i>
+            <i class='bx bx-trash'></i>
+        </div>
     </div>
-    <div class="expenses-list">
-        <h2>Expenses List</h2>
-        <div class="expense-item">
-            <span>Food</span>
-            <span>1000</span>
-            <div class="icons">
-                <i class='bx bx-edit'></i>
-                <i class='bx bx-trash'></i>
-            </div>
+    <div class="expense-item">
+        <span>Rent</span>
+        <span>600</span>
+        <div class="icons">
+            <i class='bx bx-edit'></i>
+            <i class='bx bx-trash'></i>
         </div>
-        <div class="expense-item">
-            <span>Car</span>
-            <span>1500</span>
-            <div class="icons">
-                <i class='bx bx-edit'></i>
-                <i class='bx bx-trash'></i>
-            </div>
-        </div>
-        <div class="expense-item">
-            <span>Rent</span>
-            <span>600</span>
-            <div class="icons">
-                <i class='bx bx-edit'></i>
-                <i class='bx bx-trash'></i>
-            </div>
-        </div>
-        <div class="expense-item">
-            <span>Travel</span>
-            <span>1200</span>
-            <div class="icons">
-                <i class='bx bx-edit'></i>
-                <i class='bx bx-trash'></i>
-            </div>
+    </div>
+    <div class="expense-item">
+        <span>Travel</span>
+        <span>1200</span>
+        <div class="icons">
+            <i class='bx bx-edit'></i>
+            <i class='bx bx-trash'></i>
         </div>
     </div>
