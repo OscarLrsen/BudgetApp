@@ -1,7 +1,4 @@
 ﻿using BudgetApp.Models;
-using BudgetApp.Data;
-using Microsoft.EntityFrameworkCore;
-
 
 namespace BudgetApp.Data
 {
@@ -11,20 +8,18 @@ namespace BudgetApp.Data
         {
             if (!database.Categories.Any())
             {
-
-                database.Categories.AddRange(new List<Category>
-                {
-                    new Category {Name = "Food" },
-                    new Category {Name = "Transport" },
-                    new Category { Name = "Utilities" },
-                    new Category { Name = "Entertainment" },
-                    new Category { Name = "Other" },
-
-                });
+                database.Categories.AddRange(
+                    new List<Category>
+                    {
+                        new Category { Name = "Food" },
+                        new Category { Name = "Transport" },
+                        new Category { Name = "Utilities" },
+                        new Category { Name = "Entertainment" },
+                        new Category { Name = "Other" },
+                    }
+                );
 
                 database.SaveChanges();
-                
-
             }
         }
     }
