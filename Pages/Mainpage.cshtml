@@ -33,7 +33,6 @@
     </style>
 </head>
 
-<h1>Budget Helper </h1>
 
 <div class="container">
 <div class="budgetbox">
@@ -47,6 +46,18 @@
     </form>
 </div>
 
+<div class="box">
+    <form method="post">
+        <h1>Expenses</h1>
+        <fieldset style="display: flex; flex-direction: column; gap: 10px; max-width: 300px;">
+            <label for="expenseTitle">Expense Title</label>
+            <input type="text" placeholder="Enter Title Of Product" id="expenseTitle" name="ExpenseTitle" required>
+
+            <label for="expenseAmount">Amount</label>
+            <input type="number" placeholder="Enter Amount" id="expenseAmount" name="ExpenseAmount" required>
+
+            <label for="expenseDate">Date</label>
+            <input type="datetime-local" id="expenseDate" name="ExpenseDate" required>
 
     <div class="expensebox">
         <form method="post">
