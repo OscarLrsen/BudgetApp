@@ -46,28 +46,26 @@
     </form>
 </div>
 
-<div class="box">
-    <form method="post">
-        <h1>Expenses</h1>
-        <fieldset style="display: flex; flex-direction: column; gap: 10px; max-width: 300px;">
-            <label for="expenseTitle">Expense Title</label>
-            <input type="text" placeholder="Enter Title Of Product" id="expenseTitle" name="ExpenseTitle" required>
-
-            <label for="expenseAmount">Amount</label>
-            <input type="number" placeholder="Enter Amount" id="expenseAmount" name="ExpenseAmount" required>
-
-            <label for="expenseDate">Date</label>
-            <input type="datetime-local" id="expenseDate" name="ExpenseDate" required>
-
     <div class="expensebox">
         <form method="post">
             <h1>Expenses</h1>
-                <fieldset style="display: flex; flex-direction: column; gap: 10px; max-width: 300px;">
-                    <label for="expense">Expense</label>
-                    <input type="text" placeholder="Enter Title Of Product" id="expense" name="expense" required>
-                    <input type="number" placeholder="Enter Cost Of Product" id="expense" name="expense" required>
-                    <button type="submit" style="width: 120px; height: 35px; white-space: nowrap; border-radius:50px; background-color: red; color: white;">Add Expense</button>
+            <fieldset style="display: flex; flex-direction: column; gap: 10px; max-width: 300px;">
+                <label for="expenseName">Expense Title</label>
+                <input type="text" placeholder="Enter Title Of Product" id="expenseName" name="expenseName" required>
+
+                <label for="expenseAmount">Amount</label>
+                <input type="number" placeholder="Enter Cost Of Product" id="expenseAmount" name="expenseAmount" required>
+
+                <label for="expenseCategory">Category</label>
+                <select id="expenseCategory" name="expenseCategory" required>
+                    @foreach (var category in Model.Categories)
+                    {
+                        <option value="@category.Id">@category.Name</option>
+                    }
+               </select>
+                <button type="submit" style="width: 120px; height: 35px; white-space: nowrap; border-radius: 50px; background-color: red; color: white;">
+                    Add Expense
+                </button>
             </fieldset>
         </form>
     </div>
-</div>

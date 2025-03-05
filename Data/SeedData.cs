@@ -19,7 +19,7 @@ namespace BudgetApp.Data
                     new Category { Name = "Utilities" },
                     new Category { Name = "Entertainment" },
                     new Category { Name = "Other" },
-                    new Category {Name = "Amsterdam"}
+
                 });
 
                 database.SaveChanges();
