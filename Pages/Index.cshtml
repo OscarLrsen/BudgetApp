@@ -4,8 +4,26 @@
     ViewData["Title"] = "Home page";
 }
 
-<div class="text-center">
-    
-    <!-- Skriv här för text på mainpage -->
+<div class="container mt-3">
+    <div class="row justify-content-center">
+        <div class="col-md-8 text-center">
+            <h1 class="display-4">Designa din perfekta budget.</h1>
+            <p class="lead">Håll koll på dina utgifter och börja spara pengar idag!</p>
+            <p>Registrera ett konto och logga in för att komma igång.</p>
 
-</div>
+            <div class="mt-3">
+                <a class="btn btn-primary btn-lg" asp-area="Identity" asp-page="/Account/Register">📝 Registrera</a>
+                <a class="btn btn-primary btn-lg" asp-area="Identity" asp-page="/Account/Login">🔑 Logga in</a>
+            </div>
+        </div>
+    </div>
+
+<style>
+    body {
+        background: linear-gradient(to right, #e2e2e2, #c9d6ff);
+    }
+
+    .container {
+        padding-top: 30px;
+    }
+</style>
