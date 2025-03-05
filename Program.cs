@@ -1,6 +1,6 @@
+using BudgetApp.Data;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
-using BudgetApp.Data;
 
 var builder = WebApplication.CreateBuilder(args);
 
