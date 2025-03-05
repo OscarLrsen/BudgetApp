@@ -12,4 +12,5 @@ public class ApplicationDbContext : IdentityDbContext
     }
     public DbSet<Expense> Expenses { get; set; } // DbSet sparas i databasen
     public DbSet<Category> Categories { get; set; }
+
 }
