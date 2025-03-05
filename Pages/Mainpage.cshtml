@@ -106,7 +106,37 @@
 
 
 <div class="container">
+<<<<<<< HEAD
     <div class="budgetbox">
+=======
+<div class="budgetbox">
+    <form method="post">
+        <h1>Budget</h1>
+        <fieldset style="display: flex; flex-direction: column; gap: 10px; max-width: 300px;">
+            <label for="income">Income</label>
+            <input type="number" placeholder="Enter Total Amount"  id="income" name="income" required>
+            <button type="submit" style="width: 120px; height: 35px; white-space: nowrap; border-radius:50px; background-color: blue; color: white;">Set Budget</button>
+        </fieldset>
+    </form>
+</div>
+</div>
+
+<div class="box">
+    <form method="post">
+        <h1>Expenses</h1>
+        <fieldset style="display: flex; flex-direction: column; gap: 10px; max-width: 300px;">
+            <label for="expenseTitle">Expense Title</label>
+            <input type="text" placeholder="Enter Title Of Product" id="expenseTitle" name="ExpenseTitle" required>
+
+            <label for="expenseAmount">Amount</label>
+            <input type="number" placeholder="Enter Amount" id="expenseAmount" name="ExpenseAmount" required>
+
+            <label for="expenseDate">Date</label>
+            <input type="datetime-local" id="expenseDate" name="ExpenseDate" required>
+            </fieldset>
+
+    <div class="expensebox">
+>>>>>>> Aleksander
         <form method="post">
             <h1>Budget</h1>
             <fieldset style="display: flex; flex-direction: column; gap: 10px; max-width: 300px;">
@@ -118,6 +148,7 @@
             </fieldset>
         </form>
     </div>
+</form>
 
     <div class="box">
         <form method="post">
