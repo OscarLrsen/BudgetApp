@@ -243,9 +243,12 @@
                         <td>@expense.Date.ToShortDateString()</td>
                         <td class="icons">
                             <a asp-page="/EditExpense" asp-route-id="@expense.Id"><i class='bx bx-edit'></i></a>
-                            <a asp-page-handler="Delete" asp-route-id="@expense.Id" onclick="return confirm('Are you sure?');">
-                                <i class='bx bx-trash'></i>
-                            </a>
+                            <form method="post" asp-page-handler="DeleteExpense" asp-route-expenseId="@expense.Id" onsubmit="return confirm('Are you sure?');">
+                                <button type="submit" class="btn-danger">
+                                    <i class='bx bx-trash'></i>
+                                </button>
+                            </form>
+
                         </td>
                     </tr>
                 }
