@@ -124,5 +124,27 @@ namespace BudgetApp.Pages
 
             return RedirectToPage();
         }
+        //Metod för att ta bort en utgift
+        public async Task<IActionResult> OnPostDeleteExpenseAsync(int expenseId)
+        {
+            var userId = _signInManager.UserManager.GetUserId(User);
+            if (string.IsNullOrEmpty(userId))
+            {
+                return Challenge();
+            }
+
+            var expense = await _context.Expenses.FirstOrDefaultAsync(e => e.Id == expenseId && e.UserId == userId);
+            if (expense == null)
+            {
+                return NotFound();
+            }
+
+            _context.Expenses.Remove(expense);
+            await _context.SaveChangesAsync();
+
+            return RedirectToPage();
+        }
+
+
     }
 }
