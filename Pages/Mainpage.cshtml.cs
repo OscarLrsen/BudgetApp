@@ -27,6 +27,10 @@ namespace BudgetApp.Pages
         public decimal Budget { get; set; }
         public decimal TotalExpenses { get; set; }
 
+        [BindProperty]
+        public Expense EditExpense { get; set; } = new();
+
+
         public async Task OnGetAsync()
         {
             // Laddar kategorier för dropdown.
@@ -144,6 +148,74 @@ namespace BudgetApp.Pages
 
             return RedirectToPage();
         }
+
+
+        public async Task<IActionResult> OnGetEditExpenseAsync(int expenseId)
+        {
+            var userId = _signInManager.UserManager.GetUserId(User);
+            if (string.IsNullOrEmpty(userId))
+            {
+                return Challenge();
+            }
+
+            // Ladda kategorier och utgifter
+            Categories = await _context.Categories.ToListAsync();
+            Expenses = await _context.Expenses
+                                    .Where(e => e.UserId == userId)
+                                    .Include(e => e.Category)
+                                    .ToListAsync();
+
+            // Hämta den expense som ska redigeras
+            var expense = await _context.Expenses.FirstOrDefaultAsync(e => e.Id == expenseId && e.UserId == userId);
+            if (expense == null)
+            {
+                return NotFound();
+            }
+
+            EditExpense = expense;
+            return Page();
+        }
+
+
+
+
+        //
+        public async Task<IActionResult> OnPostUpdateExpenseAsync()
+        {
+            var userId = _signInManager.UserManager.GetUserId(User);
+            if (string.IsNullOrEmpty(userId))
+            {
+                return Challenge();
+            }
+
+            // Kontrollera att vi har en giltig expense
+            if (EditExpense == null || string.IsNullOrWhiteSpace(EditExpense.Name))
+            {
+                ModelState.AddModelError(string.Empty, "Expense Title cannot be empty.");
+                Categories = await _context.Categories.ToListAsync();
+                Expenses = await _context.Expenses.Where(e => e.UserId == userId).Include(e => e.Category).ToListAsync();
+                return Page();
+            }
+
+            // Hitta den befintliga expense-posten
+            var expense = await _context.Expenses.FirstOrDefaultAsync(e => e.Id == EditExpense.Id && e.UserId == userId);
+            if (expense == null)
+            {
+                return NotFound();
+            }
+
+            // Uppdatera utgiften
+            expense.Name = EditExpense.Name;
+            expense.Amount = EditExpense.Amount;
+            expense.CategoryId = EditExpense.CategoryId;
+            expense.Date = DateTime.Now;
+
+            await _context.SaveChangesAsync();
+            return RedirectToPage();
+        }
+
+
+
 
 
     }
