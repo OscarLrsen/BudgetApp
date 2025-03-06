@@ -1,7 +1,339 @@
 ﻿@page "/"
+@using MyBlazorApp.Models
+@using MyBlazorApp.Data
+@using Microsoft.EntityFrameworkCore
+@inject ApplicationDbContext _context
 
-<PageTitle>Home</PageTitle>
+<PageTitle>BudgetHelper</PageTitle>
 
-<h1>Hello, world!</h1>
+<style>
+    /* Reset & Base Styles */
+    * {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+    }
 
-Welcome to your new app.
+    body {
+        background: linear-gradient(to right, #e2e2e2, #c9d6ff);
+        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        color: #333;
+        line-height: 1.6;
+        padding-bottom: 40px;
+    }
+    /* Navigation Bar */
+    .navbar {
+        width: 100%;
+        background: #fff;
+        padding: 20px;
+        box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        text-align: center;
+        font-size: 24px;
+        font-weight: bold;
+        position: sticky;
+        top: 0;
+        z-index: 1000;
+    }
+    /* Main Container */
+    .container {
+        width: 90%;
+        max-width: 1200px;
+        margin: 40px auto;
+        display: flex;
+        flex-wrap: wrap;
+        gap: 30px;
+        justify-content: center;
+    }
+    /* Box Styling for Forms */
+    .box {
+        background: #fff;
+        border-radius: 10px;
+        box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        padding: 30px;
+        flex: 1 1 300px;
+        max-width: 450px;
+    }
+
+    form h2 {
+        margin-bottom: 20px;
+        font-size: 22px;
+        border-bottom: 2px solid #e2e2e2;
+        padding-bottom: 10px;
+    }
+
+    form label {
+        display: block;
+        margin: 15px 0 5px;
+        font-weight: bold;
+    }
+
+    form input[type="number"],
+    form input[type="text"],
+    form select {
+        width: 100%;
+        padding: 12px;
+        border: 1px solid #ccc;
+        border-radius: 5px;
+        margin-bottom: 10px;
+    }
+
+    form button {
+        width: 100%;
+        padding: 12px;
+        border: none;
+        border-radius: 5px;
+        cursor: pointer;
+        font-size: 16px;
+        margin-top: 10px;
+    }
+
+    .btn-primary {
+        background-color: #007bff;
+        color: #fff;
+    }
+
+    .btn-danger {
+        background-color: #dc3545;
+        color: #fff;
+    }
+
+    form button:hover {
+        opacity: 0.9;
+    }
+    /* Summary Section */
+    .summary {
+        width: 90%;
+        max-width: 1200px;
+        background: #4a6cf7;
+        color: #fff;
+        display: flex;
+        justify-content: space-around;
+        align-items: center;
+        padding: 20px;
+        border-radius: 10px;
+        margin: 20px auto;
+        font-size: 18px;
+    }
+    /* Expenses List */
+    .expenses-list {
+        width: 90%;
+        max-width: 1200px;
+        background: #fff;
+        padding: 20px;
+        border-radius: 10px;
+        box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        margin: 20px auto;
+    }
+
+        .expenses-list h2 {
+            margin-bottom: 20px;
+            font-size: 22px;
+            text-align: center;
+        }
+
+    table {
+        width: 100%;
+        border-collapse: collapse;
+    }
+
+    th, td {
+        text-align: left;
+        padding: 15px;
+        border-bottom: 1px solid #f2f2f2;
+    }
+
+    th {
+        background: #f9f9f9;
+    }
+
+    .icons {
+        display: flex;
+        gap: 15px;
+        justify-content: center;
+    }
+
+        .icons i {
+            cursor: pointer;
+            font-size: 20px;
+            transition: color 0.3s;
+        }
+
+            .icons i:hover {
+                color: #dc3545;
+            }
+    /* Footer */
+    .footer {
+        text-align: center;
+        padding: 20px;
+        color: #777;
+        margin-top: 40px;
+    }
+</style>
+
+<!-- Navigation Bar -->
+<div class="navbar">
+    BudgetHelper
+</div>
+
+<!-- Main Content -->
+<div class="container">
+    <!-- Budget Form -->
+    <div class="box">
+        <EditForm Model="budgetModel" OnValidSubmit="HandleSetBudget">
+            <h2>Budget</h2>
+            <label for="income">Income</label>
+            <InputNumber id="income" @bind-Value="budgetModel.Income" placeholder="Enter Total Amount" required />
+            <button type="submit" class="btn-primary">Set Budget</button>
+        </EditForm>
+    </div>
+
+    <!-- Expense Form -->
+    <div class="box">
+        <EditForm Model="expenseModel" OnValidSubmit="HandleAddExpense">
+            <h2>Expenses</h2>
+            <label for="expenseName">Expense Title</label>
+            <InputText id="expenseName" @bind-Value="expenseModel.Name" placeholder="Enter Title Of Product" required />
+            <label for="expenseAmount">Amount</label>
+            <InputNumber id="expenseAmount" @bind-Value="expenseModel.Amount" placeholder="Enter Cost Of Product" required />
+            <label for="expenseCategory">Category</label>
+            <select id="expenseCategory" @bind="expenseModel.CategoryId" required>
+                <option value="">Select a category</option>
+                @foreach (var category in Categories)
+                {
+                    <option value="@category.Id">@category.Name</option>
+                }
+            </select>
+            <button type="submit" class="btn-danger">Add Expense</button>
+        </EditForm>
+    </div>
+</div>
+
+<!-- Summary Section -->
+<div class="summary">
+    <div>Total Budget: @TotalBudget</div>
+    <div>Expenses: @TotalExpenses</div>
+    <div>Balance: @(TotalBudget - TotalExpenses)</div>
+</div>
+
+<!-- Expenses List -->
+<div class="expenses-list">
+    <h2>Expenses List</h2>
+    <table>
+        <tr>
+            <th>Category</th>
+            <th>Amount</th>
+            <th>Actions</th>
+        </tr>
+        @foreach (var expense in Expenses)
+        {
+            <tr>
+                <td>@GetCategoryName(expense.CategoryId)</td>
+                <td>@expense.Amount</td>
+                <td class="icons">
+                    <i class='bx bx-edit' @onclick="() => EditExpense(expense)"></i>
+                    <i class='bx bx-trash' @onclick="() => DeleteExpense(expense)"></i>
+                </td>
+            </tr>
+        }
+    </table>
+</div>
+
+@code {
+    // Form input models
+    private BudgetInput budgetModel = new BudgetInput();
+    private ExpenseInput expenseModel = new ExpenseInput();
+
+    // Local state for budget and expenses
+    private decimal TotalBudget { get; set; }
+    private decimal TotalExpenses => Expenses.Sum(e => e.Amount);
+    private List<Category> Categories { get; set; } = new();
+    private List<Expense> Expenses { get; set; } = new();
+
+    protected override async Task OnInitializedAsync()
+    {
+        // Initialize categories and expenses.
+        // Optionally, seed some default categories if none exist.
+        Categories = await _context.Categories.ToListAsync();
+        if (!Categories.Any())
+        {
+            Categories = new List<Category>
+            {
+                new Category { Name = "Food" },
+                new Category { Name = "Car" },
+                new Category { Name = "Rent" },
+                new Category { Name = "Travel" }
+            };
+            _context.Categories.AddRange(Categories);
+            await _context.SaveChangesAsync();
+        }
+        Expenses = await _context.Expenses.ToListAsync();
+    }
+
+    // Set the budget (you may expand this as needed)
+    private Task HandleSetBudget()
+    {
+        TotalBudget = budgetModel.Income;
+        return Task.CompletedTask;
+    }
+
+    // Handle adding a new expense
+    private async Task HandleAddExpense()
+    {
+        var category = Categories.FirstOrDefault(c => c.Id == expenseModel.CategoryId);
+        if (category == null)
+        {
+            // Optionally show an error message.
+            return;
+        }
+
+        var expense = new Expense
+            {
+                Name = expenseModel.Name,
+                Amount = expenseModel.Amount,
+                Date = DateTime.Now,
+                CategoryId = category.Id
+            };
+
+        _context.Expenses.Add(expense);
+        await _context.SaveChangesAsync();
+
+        // Refresh the list of expenses
+        Expenses = await _context.Expenses.ToListAsync();
+        // Clear the expense form
+        expenseModel = new ExpenseInput();
+    }
+
+    // Placeholder for editing an expense
+    private void EditExpense(Expense expense)
+    {
+        // Implement editing logic as needed.
+    }
+
+    // Delete an expense
+    private async Task DeleteExpense(Expense expense)
+    {
+        _context.Expenses.Remove(expense);
+        await _context.SaveChangesAsync();
+        Expenses = await _context.Expenses.ToListAsync();
+    }
+
+    // Get category name by its Id
+    private string GetCategoryName(int categoryId)
+    {
+        return Categories.FirstOrDefault(c => c.Id == categoryId)?.Name ?? "Unknown";
+    }
+
+    // Input model for budget
+    public class BudgetInput
+    {
+        public decimal Income { get; set; }
+    }
+
+    // Input model for expense
+    public class ExpenseInput
+    {
+        public string Name { get; set; }
+        public decimal Amount { get; set; }
+        public int CategoryId { get; set; }
+    }
+}
