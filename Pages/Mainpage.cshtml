@@ -2,12 +2,13 @@
 @model BudgetApp.Pages.Shared.MainpageModel
 @{
 }
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>BudgetHelper</title>
+    <title>BudgetWise</title>
     <link href="https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css" rel="stylesheet">
     <style>
         /* Reset & Base Styles */
@@ -24,37 +25,63 @@
             line-height: 1.6;
             padding-bottom: 40px;
         }
+
         /* Navigation Bar */
         .navbar {
             width: 100%;
             background: #fff;
-            padding: 20px;
+            padding: 0px;
             box-shadow: 0 2px 5px rgba(0,0,0,0.1);
             text-align: center;
             font-size: 24px;
             font-weight: bold;
-            position: sticky;
+            position: relative;
             top: 0;
             z-index: 1000;
         }
+
         /* Main Container */
         .container {
             width: 90%;
             max-width: 1200px;
             margin: 40px auto;
             display: flex;
-            flex-wrap: wrap;
+            justify-content: space-between;
             gap: 30px;
-            justify-content: center;
         }
-        /* Box Styling for Forms */
+
+        .budget-expense {
+            display: flex;
+            justify-content: space-between;
+            width: 100%;
+            gap: 20px;
+        }
+
         .box {
             background: #fff;
             border-radius: 10px;
             box-shadow: 0 2px 10px rgba(0,0,0,0.1);
             padding: 30px;
-            flex: 1 1 300px;
-            max-width: 450px;
+            flex: 1;
+            max-width: 45%;
+            min-width: 300px;
+        }
+
+        .summary {
+            width: 70%;
+            max-width: 600px;
+            background: #4a6cf7;
+            color: #fff;
+            display: flex;
+            justify-content: space-around;
+            align-items: center;
+            padding: 20px;
+            border-radius: 10px;
+            font-size: 18px;
+            text-align: center;
+            margin: 20px auto; /* Centrerar rutan med ett avstånd */
+            height: 120px; /* Definiera en specifik höjd */
+
         }
 
         form h2 {
@@ -103,24 +130,10 @@
         form button:hover {
             opacity: 0.9;
         }
-        /* Summary Section */
-        .summary {
-            width: 90%;
-            max-width: 1200px;
-            background: #4a6cf7;
-            color: #fff;
-            display: flex;
-            justify-content: space-around;
-            align-items: center;
-            padding: 20px;
-            border-radius: 10px;
-            margin: 20px auto;
-            font-size: 18px;
-        }
+
         /* Expenses List */
         .expenses-list {
-            width: 90%;
-            max-width: 1200px;
+            width: 100%;
             background: #fff;
             padding: 20px;
             border-radius: 10px;
@@ -128,55 +141,67 @@
             margin: 20px auto;
         }
 
-            .expenses-list h2 {
-                margin-bottom: 20px;
-                font-size: 22px;
-                text-align: center;
-            }
-
-        table {
-            width: 100%;
-            border-collapse: collapse;
-        }
-
-        th, td {
-            text-align: left;
-            padding: 15px;
+        .expense-row {
+            display: flex;
+            justify-content: space-between;
+            padding: 10px 0;
             border-bottom: 1px solid #f2f2f2;
         }
 
-        th {
-            background: #f9f9f9;
+            .expense-row.header {
+                font-weight: bold;
+                background-color: #f9f9f9;
+            }
+
+        .expense-category,
+        .expense-amount,
+        .expense-actions {
+            width: 33%;
+            text-align: left;
+            padding: 10px;
         }
 
-        .icons {
-            display: flex;
-            gap: 15px;
-            justify-content: center;
+        .expense-actions {
+            text-align: center;
         }
 
-            .icons i {
+            .expense-actions i {
                 cursor: pointer;
                 font-size: 20px;
                 transition: color 0.3s;
             }
 
-                .icons i:hover {
+                .expense-actions i:hover {
                     color: #dc3545;
                 }
-        /* Footer */
+
         .footer {
             text-align: center;
-            padding: 20px;
+            padding: 10px;
             color: #777;
             margin-top: 40px;
+            border: none;
+            height: 120px; /* Definiera en specifik höjd */
         }
+
+        .btn-logout {
+            background-color: #dc3545; /* Röd färg */
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+            transition: background-color 0.3s;
+        }
+
+            .btn-logout:hover {
+                background-color: #c82333; /* Mörkare röd vid hover */
+            }
+
     </style>
 </head>
 <body>
-    <div class="navbar">
-        BudgetHelper
-    </div>
 
     <div class="container">
         <div class="box">
@@ -186,6 +211,12 @@
                 <input type="number" placeholder="Enter Total Amount" id="income" name="income" required>
                 <button type="submit" class="btn-primary">Set Budget</button>
             </form>
+        </div>
+
+        <div class="summary">
+            <div>Total Budget: 10000</div>
+            <div>Expenses: 4300</div>
+            <div>Balance: 5700</div>
         </div>
 
         <div class="box">
@@ -209,41 +240,56 @@
         </div>
     </div>
 
-    <div class="summary">
-        <div>Total Budget: 10000</div>
-        <div>Expenses: 4300</div>
-        <div>Balance: 5700</div>
-    </div>
-
     <div class="expenses-list">
         <h2>Expenses List</h2>
-        <table>
-            <tr>
-                <th>Category</th>
-                <th>Amount</th>
-                <th>Actions</th>
-            </tr>
-            <tr>
-                <td>Food</td>
-                <td>1000</td>
-                <td class="icons"><i class='bx bx-edit'></i><i class='bx bx-trash'></i></td>
-            </tr>
-            <tr>
-                <td>Car</td>
-                <td>1500</td>
-                <td class="icons"><i class='bx bx-edit'></i><i class='bx bx-trash'></i></td>
-            </tr>
-            <tr>
-                <td>Rent</td>
-                <td>600</td>
-                <td class="icons"><i class='bx bx-edit'></i><i class='bx bx-trash'></i></td>
-            </tr>
-            <tr>
-                <td>Travel</td>
-                <td>1200</td>
-                <td class="icons"><i class='bx bx-edit'></i><i class='bx bx-trash'></i></td>
-            </tr>
-        </table>
+        <div class="expense-row header">
+            <div class="expense-category">Category</div>
+            <div class="expense-amount">Amount</div>
+            <div class="expense-actions">Actions</div>
+        </div>
+
+        <div class="expense-row">
+            <div class="expense-category">Food</div>
+            <div class="expense-amount">1000</div>
+            <div class="expense-actions">
+                <i class='bx bx-edit'></i>
+                <i class='bx bx-trash'></i>
+            </div>
+        </div>
+
+        <div class="expense-row">
+            <div class="expense-category">Car</div>
+            <div class="expense-amount">1500</div>
+            <div class="expense-actions">
+                <i class='bx bx-edit'></i>
+                <i class='bx bx-trash'></i>
+            </div>
+        </div>
+
+        <div class="expense-row">
+            <div class="expense-category">Rent</div>
+            <div class="expense-amount">600</div>
+            <div class="expense-actions">
+                <i class='bx bx-edit'></i>
+                <i class='bx bx-trash'></i>
+            </div>
+        </div>
+
+        <div class="expense-row">
+            <div class="expense-category">Travel</div>
+            <div class="expense-amount">1200</div>
+            <div class="expense-actions">
+                <i class='bx bx-edit'></i>
+                <i class='bx bx-trash'></i>
+            </div>
+        </div>
     </div>
+
+    <!-- Other content above -->
+
+    <div class="footer">
+        <button class="btn-logout">Log Out</button>
+    </div>
+
 </body>
 </html>
