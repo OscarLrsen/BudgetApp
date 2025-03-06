@@ -1,5 +1,5 @@
 ﻿@page
-@model BudgetApp.Pages.Shared.MainpageModel
+@model BudgetApp.Pages.MainpageModel
 @{
 }
 <!DOCTYPE html>
@@ -179,17 +179,19 @@
     </div>
 
     <div class="container">
+        <!-- Budget Setup Form -->
         <div class="box">
-            <form method="post">
+            <form method="post" asp-page-handler="SetBudget">
                 <h2>Budget</h2>
-                <label for="income">Income</label>
-                <input type="number" placeholder="Enter Total Amount" id="income" name="income" required>
+                <label for="budget">Budget</label>
+                <input type="number" placeholder="Enter Budget" asp-for="Budget" id="budget" name="budget" required>
                 <button type="submit" class="btn-primary">Set Budget</button>
             </form>
         </div>
 
+        <!-- Expense Adding Form -->
         <div class="box">
-            <form method="post">
+            <form method="post" asp-page-handler="AddExpense">
                 <h2>Expenses</h2>
                 <label for="expenseName">Expense Title</label>
                 <input type="text" placeholder="Enter Title Of Product" id="expenseName" name="expenseName" required>
@@ -199,9 +201,12 @@
 
                 <label for="expenseCategory">Category</label>
                 <select id="expenseCategory" name="expenseCategory" required>
-                    @foreach (var category in Model.Categories)
+                    @if (Model.Categories != null)
                     {
-                        <option value="@category.Id">@category.Name</option>
+                        @foreach (var category in Model.Categories)
+                        {
+                            <option value="@category.Id">@category.Name</option>
+                        }
                     }
                 </select>
                 <button type="submit" class="btn-danger">Add Expense</button>
@@ -209,40 +214,48 @@
         </div>
     </div>
 
+    <!-- Summary Section: Displays Budget, Total Expenses, and Calculated Balance -->
     <div class="summary">
-        <div>Total Budget: 10000</div>
-        <div>Expenses: 4300</div>
-        <div>Balance: 5700</div>
+        <div>Total Budget: @Model.Budget</div>
+        <div>Expenses: @Model.TotalExpenses</div>
+        <div>Balance: @(Model.Budget - Model.TotalExpenses)</div>
     </div>
 
+    <!-- Expenses Table: Lists all expenses with their details -->
     <div class="expenses-list">
         <h2>Expenses List</h2>
         <table>
             <tr>
+                <th>Name</th>
                 <th>Category</th>
                 <th>Amount</th>
+                <th>Date</th>
                 <th>Actions</th>
             </tr>
-            <tr>
-                <td>Food</td>
-                <td>1000</td>
-                <td class="icons"><i class='bx bx-edit'></i><i class='bx bx-trash'></i></td>
-            </tr>
-            <tr>
-                <td>Car</td>
-                <td>1500</td>
-                <td class="icons"><i class='bx bx-edit'></i><i class='bx bx-trash'></i></td>
-            </tr>
-            <tr>
-                <td>Rent</td>
-                <td>600</td>
-                <td class="icons"><i class='bx bx-edit'></i><i class='bx bx-trash'></i></td>
-            </tr>
-            <tr>
-                <td>Travel</td>
-                <td>1200</td>
-                <td class="icons"><i class='bx bx-edit'></i><i class='bx bx-trash'></i></td>
-            </tr>
+            @if (Model.Expenses != null && Model.Expenses.Count > 0)
+            {
+                @foreach (var expense in Model.Expenses)
+                {
+                    <tr>
+                        <td>@expense.Name</td>
+                        <td>@expense.Category.Name</td>
+                        <td>@expense.Amount kr</td>
+                        <td>@expense.Date.ToShortDateString()</td>
+                        <td class="icons">
+                            <a asp-page="/EditExpense" asp-route-id="@expense.Id"><i class='bx bx-edit'></i></a>
+                            <a asp-page-handler="Delete" asp-route-id="@expense.Id" onclick="return confirm('Are you sure?');">
+                                <i class='bx bx-trash'></i>
+                            </a>
+                        </td>
+                    </tr>
+                }
+            }
+            else
+            {
+                <tr>
+                    <td colspan="5">No expenses added yet.</td>
+                </tr>
+            }
         </table>
     </div>
 </body>
