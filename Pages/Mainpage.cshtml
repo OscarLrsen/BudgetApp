@@ -1,5 +1,5 @@
 ﻿@page
-@model BudgetApp.Pages.Shared.MainpageModel
+@model BudgetApp.Pages.MainpageModel
 @{
 }
 <!DOCTYPE html>
@@ -9,169 +9,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>BudgetHelper</title>
     <link href="https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css" rel="stylesheet">
-    <style>
-        /* Reset & Base Styles */
-        * {
-            box-sizing: border-box;
-            margin: 0;
-            padding: 0;
-        }
-
-        body {
-            background: linear-gradient(to right, #e2e2e2, #c9d6ff);
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            color: #333;
-            line-height: 1.6;
-            padding-bottom: 40px;
-        }
-        /* Navigation Bar */
-        .navbar {
-            width: 100%;
-            background: #fff;
-            padding: 20px;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
-            text-align: center;
-            font-size: 24px;
-            font-weight: bold;
-            position: sticky;
-            top: 0;
-            z-index: 1000;
-        }
-        /* Main Container */
-        .container {
-            width: 90%;
-            max-width: 1200px;
-            margin: 40px auto;
-            display: flex;
-            flex-wrap: wrap;
-            gap: 30px;
-            justify-content: center;
-        }
-        /* Box Styling for Forms */
-        .box {
-            background: #fff;
-            border-radius: 10px;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
-            padding: 30px;
-            flex: 1 1 300px;
-            max-width: 450px;
-        }
-
-        form h2 {
-            margin-bottom: 20px;
-            font-size: 22px;
-            border-bottom: 2px solid #e2e2e2;
-            padding-bottom: 10px;
-        }
-
-        form label {
-            display: block;
-            margin: 15px 0 5px;
-            font-weight: bold;
-        }
-
-        form input[type="number"],
-        form input[type="text"],
-        form select {
-            width: 100%;
-            padding: 12px;
-            border: 1px solid #ccc;
-            border-radius: 5px;
-            margin-bottom: 10px;
-        }
-
-        form button {
-            width: 100%;
-            padding: 12px;
-            border: none;
-            border-radius: 5px;
-            cursor: pointer;
-            font-size: 16px;
-            margin-top: 10px;
-        }
-
-        .btn-primary {
-            background-color: #007bff;
-            color: #fff;
-        }
-
-        .btn-danger {
-            background-color: #dc3545;
-            color: #fff;
-        }
-
-        form button:hover {
-            opacity: 0.9;
-        }
-        /* Summary Section */
-        .summary {
-            width: 90%;
-            max-width: 1200px;
-            background: #4a6cf7;
-            color: #fff;
-            display: flex;
-            justify-content: space-around;
-            align-items: center;
-            padding: 20px;
-            border-radius: 10px;
-            margin: 20px auto;
-            font-size: 18px;
-        }
-        /* Expenses List */
-        .expenses-list {
-            width: 90%;
-            max-width: 1200px;
-            background: #fff;
-            padding: 20px;
-            border-radius: 10px;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
-            margin: 20px auto;
-        }
-
-            .expenses-list h2 {
-                margin-bottom: 20px;
-                font-size: 22px;
-                text-align: center;
-            }
-
-        table {
-            width: 100%;
-            border-collapse: collapse;
-        }
-
-        th, td {
-            text-align: left;
-            padding: 15px;
-            border-bottom: 1px solid #f2f2f2;
-        }
-
-        th {
-            background: #f9f9f9;
-        }
-
-        .icons {
-            display: flex;
-            gap: 15px;
-            justify-content: center;
-        }
-
-            .icons i {
-                cursor: pointer;
-                font-size: 20px;
-                transition: color 0.3s;
-            }
-
-                .icons i:hover {
-                    color: #dc3545;
-                }
-        /* Footer */
-        .footer {
-            text-align: center;
-            padding: 20px;
-            color: #777;
-            margin-top: 40px;
-        }
-    </style>
 </head>
 <body>
     <div class="navbar">
@@ -179,17 +16,19 @@
     </div>
 
     <div class="container">
+        <!-- Budget Setup Form -->
         <div class="box">
-            <form method="post">
+            <form method="post" asp-page-handler="SetBudget">
                 <h2>Budget</h2>
-                <label for="income">Income</label>
-                <input type="number" placeholder="Enter Total Amount" id="income" name="income" required>
+                <label for="budget">Budget</label>
+                <input type="number" placeholder="Enter Budget" asp-for="Budget" id="budget" name="budget" required>
                 <button type="submit" class="btn-primary">Set Budget</button>
             </form>
         </div>
 
+        <!-- Expense Adding Form -->
         <div class="box">
-            <form method="post">
+            <form method="post" asp-page-handler="AddExpense">
                 <h2>Expenses</h2>
                 <label for="expenseName">Expense Title</label>
                 <input type="text" placeholder="Enter Title Of Product" id="expenseName" name="expenseName" required>
@@ -199,9 +38,12 @@
 
                 <label for="expenseCategory">Category</label>
                 <select id="expenseCategory" name="expenseCategory" required>
-                    @foreach (var category in Model.Categories)
+                    @if (Model.Categories != null)
                     {
-                        <option value="@category.Id">@category.Name</option>
+                        @foreach (var category in Model.Categories)
+                        {
+                            <option value="@category.Id">@category.Name</option>
+                        }
                     }
                 </select>
                 <button type="submit" class="btn-danger">Add Expense</button>
@@ -209,40 +51,48 @@
         </div>
     </div>
 
+    <!-- Summary Section: Displays Budget, Total Expenses, and Calculated Balance -->
     <div class="summary">
-        <div>Total Budget: 10000</div>
-        <div>Expenses: 4300</div>
-        <div>Balance: 5700</div>
+        <div>Total Budget: @Model.Budget</div>
+        <div>Expenses: @Model.TotalExpenses</div>
+        <div>Balance: @(Model.Budget - Model.TotalExpenses)</div>
     </div>
 
+    <!-- Expenses Table: Lists all expenses with their details -->
     <div class="expenses-list">
         <h2>Expenses List</h2>
         <table>
             <tr>
+                <th>Name</th>
                 <th>Category</th>
                 <th>Amount</th>
+                <th>Date</th>
                 <th>Actions</th>
             </tr>
-            <tr>
-                <td>Food</td>
-                <td>1000</td>
-                <td class="icons"><i class='bx bx-edit'></i><i class='bx bx-trash'></i></td>
-            </tr>
-            <tr>
-                <td>Car</td>
-                <td>1500</td>
-                <td class="icons"><i class='bx bx-edit'></i><i class='bx bx-trash'></i></td>
-            </tr>
-            <tr>
-                <td>Rent</td>
-                <td>600</td>
-                <td class="icons"><i class='bx bx-edit'></i><i class='bx bx-trash'></i></td>
-            </tr>
-            <tr>
-                <td>Travel</td>
-                <td>1200</td>
-                <td class="icons"><i class='bx bx-edit'></i><i class='bx bx-trash'></i></td>
-            </tr>
+            @if (Model.Expenses != null && Model.Expenses.Count > 0)
+            {
+                @foreach (var expense in Model.Expenses)
+                {
+                    <tr>
+                        <td>@expense.Name</td>
+                        <td>@expense.Category.Name</td>
+                        <td>@expense.Amount kr</td>
+                        <td>@expense.Date.ToShortDateString()</td>
+                        <td class="icons">
+                            <a asp-page="/EditExpense" asp-route-id="@expense.Id"><i class='bx bx-edit'></i></a>
+                            <a asp-page-handler="Delete" asp-route-id="@expense.Id" onclick="return confirm('Are you sure?');">
+                                <i class='bx bx-trash'></i>
+                            </a>
+                        </td>
+                    </tr>
+                }
+            }
+            else
+            {
+                <tr>
+                    <td colspan="5">No expenses added yet.</td>
+                </tr>
+            }
         </table>
     </div>
 </body>
