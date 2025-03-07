@@ -9,7 +9,7 @@ builder.Services.AddRazorComponents()
     .AddInteractiveServerComponents();
 
 // Register the EF Core DbContext.
-// Make sure you have the appropriate connection string in appsettings.json.
+// Ensure your connection string "DefaultConnection" is defined in appsettings.json.
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
 

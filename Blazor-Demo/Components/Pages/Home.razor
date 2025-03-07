@@ -97,6 +97,18 @@
         color: #fff;
     }
 
+    .btn-secondary {
+        background-color: #6c757d;
+        color: #fff;
+        margin-top: 10px;
+        width: 100%;
+        padding: 12px;
+        border: none;
+        border-radius: 5px;
+        cursor: pointer;
+        font-size: 16px;
+    }
+
     form button:hover {
         opacity: 0.9;
     }
@@ -189,7 +201,7 @@
 
     <!-- Expense Form -->
     <div class="box">
-        <EditForm Model="expenseModel" OnValidSubmit="HandleAddExpense">
+        <EditForm Model="expenseModel" OnValidSubmit="HandleExpenseSubmit">
             <h2>Expenses</h2>
             <label for="expenseName">Expense Title</label>
             <InputText id="expenseName" @bind-Value="expenseModel.Name" placeholder="Enter Title Of Product" required />
@@ -197,13 +209,19 @@
             <InputNumber id="expenseAmount" @bind-Value="expenseModel.Amount" placeholder="Enter Cost Of Product" required />
             <label for="expenseCategory">Category</label>
             <select id="expenseCategory" @bind="expenseModel.CategoryId" required>
-                <option value="">Select a category</option>
+                <option value="0">Select a category</option>
                 @foreach (var category in Categories)
                 {
                     <option value="@category.Id">@category.Name</option>
                 }
             </select>
-            <button type="submit" class="btn-danger">Add Expense</button>
+            <button type="submit" class="btn-danger">
+                @(editingExpense == null ? "Add Expense" : "Update Expense")
+            </button>
+            @if (editingExpense != null)
+            {
+                <button type="button" class="btn-secondary" @onclick="CancelEdit">Cancel</button>
+            }
         </EditForm>
     </div>
 </div>
@@ -249,10 +267,12 @@
     private List<Category> Categories { get; set; } = new();
     private List<Expense> Expenses { get; set; } = new();
 
+    // When not null, indicates the expense is being edited.
+    private Expense? editingExpense = null;
+
     protected override async Task OnInitializedAsync()
     {
         // Initialize categories and expenses.
-        // Optionally, seed some default categories if none exist.
         Categories = await _context.Categories.ToListAsync();
         if (!Categories.Any())
         {
@@ -269,47 +289,67 @@
         Expenses = await _context.Expenses.ToListAsync();
     }
 
-    // Set the budget (you may expand this as needed)
+    // Set the budget.
     private Task HandleSetBudget()
     {
         TotalBudget = budgetModel.Income;
         return Task.CompletedTask;
     }
 
-    // Handle adding a new expense
-    private async Task HandleAddExpense()
+    // Handles both adding a new expense and updating an existing one.
+    private async Task HandleExpenseSubmit()
     {
-        var category = Categories.FirstOrDefault(c => c.Id == expenseModel.CategoryId);
-        if (category == null)
+        if (editingExpense != null)
         {
-            // Optionally show an error message.
-            return;
+            // Update the selected expense.
+            editingExpense.Name = expenseModel.Name;
+            editingExpense.Amount = expenseModel.Amount;
+            editingExpense.CategoryId = expenseModel.CategoryId;
+            editingExpense.Date = DateTime.Now;
+
+            _context.Expenses.Update(editingExpense);
+            await _context.SaveChangesAsync();
+            editingExpense = null;
         }
-
-        var expense = new Expense
+        else
+        {
+            // Validate the selected category.
+            if (expenseModel.CategoryId == 0 || Categories.FirstOrDefault(c => c.Id == expenseModel.CategoryId) == null)
             {
-                Name = expenseModel.Name,
-                Amount = expenseModel.Amount,
-                Date = DateTime.Now,
-                CategoryId = category.Id
-            };
+                // Optionally, display an error message here.
+                return;
+            }
 
-        _context.Expenses.Add(expense);
-        await _context.SaveChangesAsync();
+            var newExpense = new Expense
+                {
+                    Name = expenseModel.Name,
+                    Amount = expenseModel.Amount,
+                    Date = DateTime.Now,
+                    CategoryId = expenseModel.CategoryId
+                };
 
-        // Refresh the list of expenses
+            _context.Expenses.Add(newExpense);
+            await _context.SaveChangesAsync();
+        }
+        // Refresh the list of expenses.
         Expenses = await _context.Expenses.ToListAsync();
-        // Clear the expense form
+        // Reset the expense form.
         expenseModel = new ExpenseInput();
     }
 
-    // Placeholder for editing an expense
+    // Populate the form with the expense details for editing.
     private void EditExpense(Expense expense)
     {
-        // Implement editing logic as needed.
+        editingExpense = expense;
+        expenseModel = new ExpenseInput
+            {
+                Name = expense.Name,
+                Amount = expense.Amount,
+                CategoryId = expense.CategoryId
+            };
     }
 
-    // Delete an expense
+    // Delete an expense.
     private async Task DeleteExpense(Expense expense)
     {
         _context.Expenses.Remove(expense);
@@ -317,19 +357,26 @@
         Expenses = await _context.Expenses.ToListAsync();
     }
 
-    // Get category name by its Id
+    // Cancel editing mode.
+    private void CancelEdit()
+    {
+        editingExpense = null;
+        expenseModel = new ExpenseInput();
+    }
+
+    // Get the category name based on its ID.
     private string GetCategoryName(int categoryId)
     {
         return Categories.FirstOrDefault(c => c.Id == categoryId)?.Name ?? "Unknown";
     }
 
-    // Input model for budget
+    // Input model for the budget form.
     public class BudgetInput
     {
         public decimal Income { get; set; }
     }
 
-    // Input model for expense
+    // Input model for the expense form.
     public class ExpenseInput
     {
         public string Name { get; set; }
