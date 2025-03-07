@@ -191,7 +191,7 @@
 <div class="container">
     <!-- Budget Form -->
     <div class="box">
-        <EditForm Model="budgetModel" OnValidSubmit="HandleSetBudget">
+        <EditForm Model="budgetModel" OnValidSubmit="HandleSetBudget" FormName="budgetForm">
             <h2>Budget</h2>
             <label for="income">Income</label>
             <InputNumber id="income" @bind-Value="budgetModel.Income" placeholder="Enter Total Amount" required />
@@ -201,7 +201,7 @@
 
     <!-- Expense Form -->
     <div class="box">
-        <EditForm Model="expenseModel" OnValidSubmit="HandleExpenseSubmit">
+        <EditForm Model="expenseModel" OnValidSubmit="HandleExpenseSubmit" FormName="expenseForm">
             <h2>Expenses</h2>
             <label for="expenseName">Expense Title</label>
             <InputText id="expenseName" @bind-Value="expenseModel.Name" placeholder="Enter Title Of Product" required />
