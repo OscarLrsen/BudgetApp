@@ -189,30 +189,58 @@
             </form>
         </div>
 
-        <!-- Expense Adding Form -->
         <div class="box">
-            <form method="post" asp-page-handler="AddExpense">
-                <h2>Expenses</h2>
-                <label for="expenseName">Expense Title</label>
-                <input type="text" placeholder="Enter Title Of Product" id="expenseName" name="expenseName" required>
+            @if (Model.EditExpense != null && Model.EditExpense.Id > 0)
+            {
+                <!-- EDIT FORM -->
+                <form method="post">
+                    <h2>Edit Expense</h2>
 
-                <label for="expenseAmount">Amount</label>
-                <input type="number" placeholder="Enter Cost Of Product" id="expenseAmount" name="expenseAmount" required>
+                    <!-- Dold input för att hålla reda på vilken expense vi redigerar -->
+                    <input type="hidden" asp-for="EditExpense.Id" />
 
-                <label for="expenseCategory">Category</label>
-                <select id="expenseCategory" name="expenseCategory" required>
-                    @if (Model.Categories != null)
-                    {
+                    <label for="editExpenseName">Expense Title</label>
+                    <input type="text" asp-for="EditExpense.Name" placeholder="Enter Title Of Product" required>
+
+                    <label for="editExpenseAmount">Amount</label>
+                    <input type="number" asp-for="EditExpense.Amount" placeholder="Enter Cost Of Product" required>
+
+                    <label for="editExpenseCategory">Category</label>
+                    <select asp-for="EditExpense.CategoryId" required>
                         @foreach (var category in Model.Categories)
                         {
                             <option value="@category.Id">@category.Name</option>
                         }
-                    }
-                </select>
-                <button type="submit" class="btn-danger">Add Expense</button>
-            </form>
+                    </select>
+
+                    <button type="submit" asp-page-handler="UpdateExpense" class="btn-primary">Update Expense</button>
+                </form>
+            }
+            else
+            {
+                <!-- ADD FORM -->
+                <form method="post">
+                    <h2>Add Expense</h2>
+
+                    <label for="expenseName">Expense Title</label>
+                    <input type="text" id="expenseName" name="expenseName" placeholder="Enter Title Of Product" required>
+
+                    <label for="expenseAmount">Amount</label>
+                    <input type="number" id="expenseAmount" name="expenseAmount" placeholder="Enter Cost Of Product" required>
+
+                    <label for="expenseCategory">Category</label>
+                    <select id="expenseCategory" name="expenseCategory" required>
+                        @foreach (var category in Model.Categories)
+                        {
+                            <option value="@category.Id">@category.Name</option>
+                        }
+                    </select>
+
+                    <button type="submit" asp-page-handler="AddExpense" class="btn-primary">Add Expense</button>
+                </form>
+            }
         </div>
-    </div>
+
 
     <!-- Summary Section: Displays Budget, Total Expenses, and Calculated Balance -->
     <div class="summary">
@@ -242,7 +270,10 @@
                         <td>@expense.Amount kr</td>
                         <td>@expense.Date.ToShortDateString()</td>
                         <td class="icons">
-                            <a asp-page="/EditExpense" asp-route-id="@expense.Id"><i class='bx bx-edit'></i></a>
+                            <a asp-page="/Mainpage" asp-page-handler="EditExpense" asp-route-expenseId="@expense.Id"> <!-- Edit knappen-->
+                                <i class='bx bx-edit'></i>
+                            </a>
+
                             <form method="post" asp-page-handler="DeleteExpense" asp-route-expenseId="@expense.Id" onsubmit="return confirm('Are you sure?');">
                                 <button type="submit" class="btn-danger">
                                     <i class='bx bx-trash'></i>
