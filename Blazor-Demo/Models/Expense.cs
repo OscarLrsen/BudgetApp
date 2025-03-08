@@ -7,6 +7,7 @@
         public decimal Amount { get; set; }
         public DateTime Date { get; set; }
 
+
         // Foreign key for the associated user.
         public string UserId { get; set; }
         public User User { get; set; }

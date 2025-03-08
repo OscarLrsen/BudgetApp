@@ -4,7 +4,7 @@ using MyBlazorApp.Models;
 
 namespace MyBlazorApp.Data
 {
-    // Inherit from IdentityDbContext<User> to integrate ASP.NET Core Identity.
+    // Inherit from IdentityDbContext<User> so that the AspNetUsers table includes our Budget property.
     public class ApplicationDbContext : IdentityDbContext<User>
     {
         public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options)
@@ -18,9 +18,13 @@ namespace MyBlazorApp.Data
         {
             base.OnModelCreating(modelBuilder);
 
-            // Configure precision and scale for the decimal property.
+            // Configure decimal precision.
             modelBuilder.Entity<Expense>()
                         .Property(e => e.Amount)
+                        .HasColumnType("decimal(18,2)");
+
+            modelBuilder.Entity<User>()
+                        .Property(u => u.Budget)
                         .HasColumnType("decimal(18,2)");
         }
     }
