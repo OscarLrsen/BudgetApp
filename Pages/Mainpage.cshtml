@@ -229,7 +229,7 @@
                 <th>Name</th>
                 <th>Category</th>
                 <th>Amount</th>
-                <th>Date</th>
+                @* <th>Date</th> *@
                 <th>Actions</th>
             </tr>
             @if (Model.Expenses != null && Model.Expenses.Count > 0)
@@ -240,7 +240,7 @@
                         <td>@expense.Name</td>
                         <td>@expense.Category.Name</td>
                         <td>@expense.Amount kr</td>
-                        <td>@expense.Date.ToShortDateString()</td>
+                        @* <td>@expense.Date.ToShortDateString()</td> *@
                         <td class="icons">
                             <a asp-page="/EditExpense" asp-route-id="@expense.Id"><i class='bx bx-edit'></i></a>
                             <form method="post" asp-page-handler="DeleteExpense" asp-route-expenseId="@expense.Id" onsubmit="return confirm('Are you sure?');">
@@ -259,6 +259,7 @@
                     <td colspan="5">No expenses added yet.</td>
                 </tr>
             }
+
         </table>
     </div>
 </body>
