@@ -2,11 +2,13 @@
 
 namespace MyBlazorApp.Models
 {
+    // Custom user model extending IdentityUser.
     public class User : IdentityUser
     {
-        //Lägg till här om det behövs fler properties i User!!
-        public int ExpenseId { get; set; }
-        public List<Expense> Transactions { get; set; } = new(); // Navigation property, gör det lättare att hämta data
+        // Budget property now stored on the user.
+        public decimal Budget { get; set; }
 
+        // Navigation property: one User can have many Expenses.
+        public List<Expense> Expenses { get; set; } = new();
     }
 }
