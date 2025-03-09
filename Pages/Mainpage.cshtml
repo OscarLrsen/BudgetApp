@@ -293,5 +293,70 @@
 
         </table>
     </div>
+
+
+        <!-- Pie Chart för Budget -->
+        <div class="chart-container" style="width: 50%; margin: auto; padding-top: 40px;">
+            <h2 style="text-align: center;">Budgetfördelning</h2>
+            <canvas id="budgetChart"></canvas>
+        </div>
+
+
+        <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+        <script>
+            document.addEventListener("DOMContentLoaded", async function () {
+                console.log(" Pie Chart laddas...");
+
+                // Hämta budgetdata från backend
+                async function fetchBudgetData() {
+                    try {
+                        const response = await fetch('/api/budget');
+                        if (!response.ok) {
+                            throw new Error("Kunde inte hämta budgetdata");
+                        }
+                        return await response.json();
+                    } catch (error) {
+                        console.error(" Fel vid hämtning av budgetdata:", error);
+                        return { budgetAmount: 0, totalExpenses: 0 };
+                    }
+                }
+
+                // Skapa Pie Chart
+                async function createChart() {
+                    const data = await fetchBudgetData();
+
+                    const totalBudget = data.budgetAmount;
+                    const totalExpenses = data.totalExpenses;
+                    const remainingBudget = totalBudget - totalExpenses;
+
+                    const ctx = document.getElementById('budgetChart').getContext('2d');
+
+                    new Chart(ctx, {
+                        type: 'pie',
+                        data: {
+                    labels: ['Utgifter', 'Kvarvarande Budget'],
+                    datasets: [{
+                        data: [totalExpenses, remainingBudget],
+                        backgroundColor: ['#ff6384', '#36a2eb'], //Ändra färg
+                        borderColor: ['#ff3b60', '#2a82c8'], // Kantlinjefärg
+                        borderWidth: 2
+                    }]
+                        },
+                        options: {
+                            responsive: true,
+                            plugins: {
+                                legend: { position: 'top' },
+                                title: { display: true, text: 'Budgetfördelning' }
+                            }
+                        }
+                    });
+
+                    console.log("Pie Chart!");
+                }
+
+                createChart();
+            });
+        </script>
+
 </body>
 </html>

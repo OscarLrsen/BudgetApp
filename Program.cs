@@ -1,5 +1,6 @@
 using BudgetApp.Data;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -48,5 +49,23 @@ app.UseRouting();
 app.UseAuthorization();
 
 app.MapRazorPages();
+
+app.MapGet("/api/budget", async (HttpContext context, [FromServices] ApplicationDbContext dbContext, [FromServices] SignInManager<IdentityUser> signInManager) =>
+{
+    var userId = signInManager.UserManager.GetUserId(context.User);
+    if (string.IsNullOrEmpty(userId))
+    {
+        return Results.Unauthorized();
+    }
+
+    var userBudget = await dbContext.UserBudgets.FirstOrDefaultAsync(b => b.UserId == userId);
+    var expenses = await dbContext.Expenses.Where(e => e.UserId == userId).ToListAsync();
+
+    var budgetAmount = userBudget?.Amount ?? 0;
+    var totalExpenses = expenses.Sum(e => e.Amount);
+
+    return Results.Json(new { budgetAmount, totalExpenses });
+});
+
 
 app.Run();
