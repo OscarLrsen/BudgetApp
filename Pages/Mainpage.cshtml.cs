@@ -158,7 +158,6 @@ namespace BudgetApp.Pages
             return RedirectToPage();
         }
 
-
         public async Task<IActionResult> OnGetEditExpenseAsync(int expenseId)
         {
             var userId = _signInManager.UserManager.GetUserId(User);
@@ -174,6 +173,13 @@ namespace BudgetApp.Pages
                                     .Include(e => e.Category)
                                     .ToListAsync();
 
+            //Gör så att budget inte tappar värdet när man trycker edit
+            var userBudget = await _context.UserBudgets.FirstOrDefaultAsync(b => b.UserId == userId);
+            if (userBudget != null)
+            {
+                Budget = userBudget.Amount;
+            }
+
             // Hämta den expense som ska redigeras
             var expense = await _context.Expenses.FirstOrDefaultAsync(e => e.Id == expenseId && e.UserId == userId);
             if (expense == null)
@@ -181,12 +187,11 @@ namespace BudgetApp.Pages
                 return NotFound();
             }
 
+
+
             EditExpense = expense;
             return Page();
         }
-
-
-
 
         //Metod för att uppdatera expense
         public async Task<IActionResult> OnPostUpdateExpenseAsync()
@@ -220,6 +225,7 @@ namespace BudgetApp.Pages
             //expense.Date = DateTime.Now;
 
             await _context.SaveChangesAsync();
+
             return RedirectToPage();
         }
 
