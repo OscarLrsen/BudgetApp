@@ -1,4 +1,5 @@
-﻿@page
+﻿
+@page
 @model BudgetApp.Pages.MainpageModel
 @{
 }
@@ -9,6 +10,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>BudgetHelper</title>
     <link href="https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
     <style>
         /* Reset & Base Styles */
         * {
@@ -28,11 +31,10 @@
         .navbar {
             width: 100%;
             background: #fff;
-            padding: 20px;
+            padding: 10px;
             box-shadow: 0 2px 5px rgba(0,0,0,0.1);
             text-align: center;
-            font-size: 24px;
-            font-weight: bold;
+            font-size: 16px;
             position: sticky;
             top: 0;
             z-index: 1000;
@@ -257,7 +259,7 @@
                 <th>Name</th>
                 <th>Category</th>
                 <th>Amount</th>
-                <th>Date</th>
+                @* <th>Date</th> *@
                 <th>Actions</th>
             </tr>
             @if (Model.Expenses != null && Model.Expenses.Count > 0)
@@ -268,7 +270,7 @@
                         <td>@expense.Name</td>
                         <td>@expense.Category.Name</td>
                         <td>@expense.Amount kr</td>
-                        <td>@expense.Date.ToShortDateString()</td>
+                        @* <td>@expense.Date.ToShortDateString()</td> *@
                         <td class="icons">
                             <a asp-page="/Mainpage" asp-page-handler="EditExpense" asp-route-expenseId="@expense.Id"> <!-- Edit knappen-->
                                 <i class='bx bx-edit'></i>
@@ -290,7 +292,103 @@
                     <td colspan="5">No expenses added yet.</td>
                 </tr>
             }
+
         </table>
     </div>
+        <!-- Category Expenses -->
+        <div class="expenses-list">
+            <h2>Expenses by Category</h2>
+            <table>
+                <tr>
+                    <th>Category</th>
+                    <th>Total Amount</th>
+                    <th>Percentage of Budget</th>
+                </tr>
+                @{
+                    var categoryExpenses = Model.GetExpensesByCategory();
+                    foreach (var category in categoryExpenses)
+                    {
+                        var percentage = Model.Budget > 0 ? (category.Value / Model.Budget * 100).ToString("0.0") : "0";
+                        <tr>
+                            <td>@category.Key</td>
+                            <td>@category.Value kr</td>
+                            <td>@percentage%</td>
+                        </tr>
+                    }
+                }
+            </table>
+        </div>
+
+        <!-- Pie Chart för Budget -->
+        <div class="chart-container" style="width: 50%; margin: auto; padding-top: 40px;">
+            <h2 style="text-align: center;"></h2>
+            <canvas id="budgetChart"></canvas>
+        </div>
+
+
+        <script>
+            document.addEventListener("DOMContentLoaded", async function () {
+                console.log("Pie Chart laddas...");
+
+                // Hämta data från backend 
+                async function fetchBudgetData() {
+                    try {
+                        const response = await fetch('/api/budget');
+                        if (!response.ok) {
+                            throw new Error("Could not fetch budget data");
+                        }
+                        return await response.json();
+                    } catch (error) {
+                        console.error("Error fetching budget data:", error);
+                        return { categories: [], totalBudget: 0 };
+                    }
+                }
+
+                // Skapa pie chart
+                async function createChart() {
+                    const data = await fetchBudgetData();
+                    const categories = data.categories;
+                    const totalBudget = data.totalBudget;
+
+					// Extrahera labels och amounts från kategorierna
+                    const labels = categories.map(category => category.name);
+                    const amounts = categories.map(category => category.amount);
+                    const remainingBudget = totalBudget - amounts.reduce((a, b) => a + b, 0);
+
+					// Skapa pie chart
+                    const ctx = document.getElementById('budgetChart').getContext('2d');
+                    new Chart(ctx, {
+                        type: 'pie',
+                        data: {
+                            labels: [...labels, 'Remaining Budget'], // Budget label
+                            datasets: [{
+                                data: [...amounts, remainingBudget], // Budget amounts
+                                backgroundColor: [
+                                    '#ff6384', '#36a2eb', '#ffcd56', '#4bc0c0', '#9966ff' // Färger
+                                ],
+                                borderColor: [
+                                    '#ff3b60', '#2a82c8', '#ffb347', '#4fbfbf', '#8f5fff' // Border color
+                                ],
+                                borderWidth: 2
+                            }]
+                        },
+                        options: {
+                            responsive: true,
+                            plugins: {
+                                legend: { position: 'top' },
+                                title: { display: true, text: 'Budget' }
+                            }
+                        }
+                    });
+
+                    console.log("Pie chart skapad!");
+                }
+
+                createChart();
+            });
+        </script>
+
+
+
 </body>
 </html>

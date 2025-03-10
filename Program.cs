@@ -1,5 +1,6 @@
 using BudgetApp.Data;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -21,10 +22,9 @@ var app = builder.Build();
 using (var scope = app.Services.CreateScope())
 {
     var dbContext = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
-    // Apply migrations to the database
+   
     //dbContext.Database.Migrate();
 
-    // Seed the database with initial data
     SampleData.SeedData(dbContext);
 }
 
@@ -48,5 +48,49 @@ app.UseRouting();
 app.UseAuthorization();
 
 app.MapRazorPages();
+
+app.MapGet("/api/budget", async (HttpContext context, [FromServices] ApplicationDbContext dbContext, [FromServices] SignInManager<IdentityUser> signInManager) =>
+{
+    var userId = signInManager.UserManager.GetUserId(context.User);
+    if (string.IsNullOrEmpty(userId))
+    {
+        return Results.Unauthorized();
+    }
+
+    // Hämta användarens budget
+    var userBudget = await dbContext.UserBudgets.FirstOrDefaultAsync(b => b.UserId == userId);
+
+    // Hämta användarens utgifter
+    var expenses = await dbContext.Expenses
+        .Where(e => e.UserId == userId)
+        .Include(e => e.Category)  // Se till att kategori är inkluderat
+        .ToListAsync();
+
+    // Skaffa tot budget 
+    var budgetAmount = userBudget?.Amount ?? 0;
+
+    // SKaffa total exp
+    var totalExpenses = expenses.Sum(e => e.Amount);
+
+    // Grupera expenses
+    var categoryExpenses = expenses
+        .GroupBy(e => e.Category.Name)  // Gruppera efter namn
+        .Select(g => new
+        {
+            Name = g.Key,
+            Amount = g.Sum(e => e.Amount)
+        })
+        .ToList();
+
+    // Returnera budget amount, total exp och category
+    return Results.Json(new
+    {
+        totalBudget = budgetAmount,
+        totalExpenses,
+        categories = categoryExpenses  
+    });
+});
+
+
 
 app.Run();
