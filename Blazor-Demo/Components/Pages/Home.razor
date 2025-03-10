@@ -1,0 +1,353 @@
+﻿@page "/"
+@attribute [IgnoreAntiforgeryToken]
+@using Microsoft.AspNetCore.Mvc
+@using MyBlazorApp.Models
+@using MyBlazorApp.Data
+@using Microsoft.EntityFrameworkCore
+@inject ApplicationDbContext _context
+
+<PageTitle>BudgetHelper</PageTitle>
+
+<style>
+    /* Basic styling */
+    * {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+    }
+
+    body {
+        background: linear-gradient(to right, #e2e2e2, #c9d6ff);
+        font-family: sans-serif;
+        padding-bottom: 40px;
+    }
+
+    .navbar {
+        width: 100%;
+        background: #fff;
+        padding: 20px;
+        box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        text-align: center;
+        font-size: 24px;
+        font-weight: bold;
+        position: sticky;
+        top: 0;
+    }
+
+    .container {
+        width: 90%;
+        max-width: 1200px;
+        margin: 40px auto;
+        display: flex;
+        flex-wrap: wrap;
+        gap: 30px;
+        justify-content: center;
+    }
+
+    .box {
+        background: #fff;
+        border-radius: 10px;
+        box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        padding: 30px;
+        flex: 1 1 300px;
+        max-width: 450px;
+    }
+
+    h2 {
+        margin-bottom: 20px;
+        font-size: 22px;
+        border-bottom: 2px solid #e2e2e2;
+        padding-bottom: 10px;
+    }
+
+    label {
+        display: block;
+        margin: 15px 0 5px;
+        font-weight: bold;
+    }
+
+    input, select {
+        width: 100%;
+        padding: 12px;
+        border: 1px solid #ccc;
+        border-radius: 5px;
+        margin-bottom: 10px;
+    }
+
+    button {
+        width: 100%;
+        padding: 12px;
+        border: none;
+        border-radius: 5px;
+        cursor: pointer;
+        font-size: 16px;
+        margin-top: 10px;
+    }
+
+    .btn-primary {
+        background: #007bff;
+        color: #fff;
+    }
+
+    .btn-danger {
+        background: #dc3545;
+        color: #fff;
+    }
+
+    .btn-secondary {
+        background: #6c757d;
+        color: #fff;
+    }
+
+    .summary {
+        width: 90%;
+        max-width: 1200px;
+        background: #4a6cf7;
+        color: #fff;
+        display: flex;
+        justify-content: space-around;
+        align-items: center;
+        padding: 20px;
+        border-radius: 10px;
+        margin: 20px auto;
+        font-size: 18px;
+    }
+
+    .expenses-list {
+        width: 90%;
+        max-width: 1200px;
+        background: #fff;
+        padding: 20px;
+        border-radius: 10px;
+        box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        margin: 20px auto;
+    }
+
+    table {
+        width: 100%;
+        border-collapse: collapse;
+    }
+
+    th, td {
+        text-align: left;
+        padding: 15px;
+        border-bottom: 1px solid #f2f2f2;
+    }
+
+    th {
+        background: #f9f9f9;
+    }
+
+    .icons button {
+        cursor: pointer;
+        font-size: 14px;
+        margin-right: 5px;
+    }
+</style>
+
+<div class="navbar">BudgetHelper</div>
+
+<div class="container">
+    <!-- Budget Section -->
+    <div class="box">
+        <h2>Budget</h2>
+        <label for="budgetInput">Budget Amount</label>
+        <InputNumber id="budgetInput" @bind-Value="budgetModel.Amount" placeholder="Enter Budget" />
+        <button type="button" class="btn-primary" @onclick="UpdateBudget">Set Budget</button>
+    </div>
+    <!-- Expense Section -->
+    <div class="box">
+        <h2>Expenses</h2>
+        <label for="expenseName">Expense Title</label>
+        <InputText id="expenseName" @bind-Value="expenseModel.Name" placeholder="Enter Expense Title" />
+        <label for="expenseAmount">Amount</label>
+        <InputNumber id="expenseAmount" @bind-Value="expenseModel.Amount" placeholder="Enter Expense Amount" />
+        <label for="expenseCategory">Category</label>
+        <InputSelect id="expenseCategory" @bind-Value="expenseModel.CategoryId">
+            <option value="0">Select a category</option>
+            @foreach (var cat in Categories)
+            {
+                <option value="@cat.Id">@cat.Name</option>
+            }
+        </InputSelect>
+        <button type="button" class="btn-danger" @onclick="AddOrUpdateExpense">
+            @(editingExpense == null ? "Add Expense" : "Update Expense")
+        </button>
+        @if (editingExpense != null)
+        {
+            <button type="button" class="btn-secondary" @onclick="CancelEdit">Cancel</button>
+        }
+    </div>
+</div>
+
+<div class="summary">
+    <div>Total Budget: @currentBudget</div>
+    <div>Total Expenses: @TotalExpenses</div>
+    <div>Balance: @(currentBudget - TotalExpenses)</div>
+</div>
+
+<div class="expenses-list">
+    <h2>Expenses List</h2>
+    <table>
+        <thead>
+            <tr>
+                <th>Category</th>
+                <th>Expense</th>
+                <th>Amount</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var exp in Expenses)
+            {
+                <tr>
+                    <td>@GetCategoryName(exp.CategoryId)</td>
+                    <td>@exp.Name</td>
+                    <td>@exp.Amount</td>
+                    <td class="icons">
+                        <button type="button" @onclick="() => EditExpense(exp)">Edit</button>
+                        <button type="button" @onclick="() => DeleteExpense(exp.Id)">Delete</button>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+</div>
+
+@code {
+    public class BudgetInputModel
+    {
+        public decimal Amount { get; set; }
+    }
+    public class ExpenseInputModel
+    {
+        public string Name { get; set; }
+        public decimal Amount { get; set; }
+        public int CategoryId { get; set; }
+    }
+
+    private BudgetInputModel budgetModel = new BudgetInputModel();
+    private ExpenseInputModel expenseModel = new ExpenseInputModel();
+
+    private decimal currentBudget { get; set; } = 0;
+    private decimal TotalExpenses => Expenses.Sum(e => e.Amount);
+    private List<Category> Categories { get; set; } = new List<Category>();
+    private List<Expense> Expenses { get; set; } = new List<Expense>();
+
+    private Expense editingExpense = null;
+    private MyBlazorApp.Models.User currentUser = null;
+
+    protected override async Task OnInitializedAsync()
+    {
+        // Simulate a local "TestUser" without using the database
+        currentUser = new MyBlazorApp.Models.User
+            {
+                Id = "1",
+                UserName = "TestUser",
+                Email = "test@example.com",
+                Budget = 0
+            };
+        currentBudget = currentUser.Budget;
+        budgetModel.Amount = currentBudget;
+
+        // Seed categories (simulate DB seeding)
+        Categories = new List<Category>
+        {
+            new Category { Id = 1, Name = "Food" },
+            new Category { Id = 2, Name = "Car" },
+            new Category { Id = 3, Name = "Rent" },
+            new Category { Id = 4, Name = "Travel" }
+        };
+
+        // Start with an empty list of expenses
+        Expenses = new List<Expense>();
+
+        await Task.CompletedTask;
+    }
+
+    private Task UpdateBudget()
+    {
+        Console.WriteLine($"[LOG] Updating budget to: {budgetModel.Amount}");
+        if (currentUser != null)
+        {
+            currentUser.Budget = budgetModel.Amount;
+            currentBudget = currentUser.Budget;
+            Console.WriteLine($"[LOG] New currentBudget: {currentBudget}");
+        }
+        StateHasChanged();
+        return Task.CompletedTask;
+    }
+
+    private Task AddOrUpdateExpense()
+    {
+        if (editingExpense != null)
+        {
+            // Update the in-memory expense
+            editingExpense.Name = expenseModel.Name;
+            editingExpense.Amount = expenseModel.Amount;
+            editingExpense.CategoryId = expenseModel.CategoryId;
+            editingExpense.Date = DateTime.Now;
+            Console.WriteLine($"[LOG] Updated expense: {editingExpense.Name}");
+            editingExpense = null;
+        }
+        else
+        {
+            if (expenseModel.CategoryId == 0)
+            {
+                Console.WriteLine("[LOG] Invalid category selected.");
+                return Task.CompletedTask;
+            }
+            // Simulate adding a new expense with an auto-incrementing Id
+            int newId = Expenses.Any() ? Expenses.Max(e => e.Id) + 1 : 1;
+            var newExp = new Expense
+                {
+                    Id = newId,
+                    Name = expenseModel.Name,
+                    Amount = expenseModel.Amount,
+                    Date = DateTime.Now,
+                    CategoryId = expenseModel.CategoryId,
+                    UserId = currentUser != null ? currentUser.Id : "0"
+                };
+            Expenses.Add(newExp);
+            Console.WriteLine($"[LOG] Added new expense: {newExp.Name}");
+        }
+        // Reset the expense form
+        expenseModel = new ExpenseInputModel();
+        StateHasChanged();
+        return Task.CompletedTask;
+    }
+
+    private Task DeleteExpense(int id)
+    {
+        var exp = Expenses.FirstOrDefault(e => e.Id == id);
+        if (exp != null)
+        {
+            Expenses.Remove(exp);
+            Console.WriteLine($"[LOG] Deleted expense: {exp.Name}");
+        }
+        StateHasChanged();
+        return Task.CompletedTask;
+    }
+
+    private void EditExpense(Expense exp)
+    {
+        editingExpense = exp;
+        expenseModel.Name = exp.Name;
+        expenseModel.Amount = exp.Amount;
+        expenseModel.CategoryId = exp.CategoryId;
+        Console.WriteLine($"[LOG] Editing expense: {exp.Name}");
+    }
+
+    private void CancelEdit()
+    {
+        Console.WriteLine("[LOG] Cancelled editing.");
+        editingExpense = null;
+        expenseModel = new ExpenseInputModel();
+        StateHasChanged();
+    }
+
+    private string GetCategoryName(int catId)
+    {
+        return Categories.FirstOrDefault(c => c.Id == catId)?.Name ?? "Unknown";
+    }
+}

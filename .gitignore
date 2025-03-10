@@ -33,6 +33,22 @@ bld/
 [Ll]og/
 [Ll]ogs/
 
+Blazor-Demo/[Dd]ebug/
+Blazor-Demo/[Dd]ebugPublic/
+Blazor-Demo/[Rr]elease/
+Blazor-Demo/[Rr]eleases/
+Blazor-Demo/x64/
+Blazor-Demo/x86/
+Blazor-Demo/[Ww][Ii][Nn]32/
+Blazor-Demo/[Aa][Rr][Mm]/
+Blazor-Demo/[Aa][Rr][Mm]64/
+Blazor-Demo/bld/
+Blazor-Demo/[Bb]in/
+Blazor-Demo/[Oo]bj/
+Blazor-Demo/[Oo]ut/
+Blazor-Demo/[Ll]og/
+Blazor-Demo/[Ll]ogs/
+
 # Visual Studio 2015/2017 cache/options directory
 .vs/
 # Uncomment if you have tasks that create the project's static files in wwwroot
@@ -355,7 +371,7 @@ healthchecksdb
 
 # Backup folder for Package Reference Convert tool in Visual Studio 2017
 MigrationBackup/
-
+Migrations/
 # Ionide (cross platform F# VS Code tools) working folder
 .ionide/
 
