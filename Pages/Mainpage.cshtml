@@ -1,15 +1,17 @@
-﻿@page
+﻿
+@page
 @model BudgetApp.Pages.MainpageModel
 @{
 }
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>BudgetWise</title>
+    <title>BudgetHelper</title>
     <link href="https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
     <style>
         /* Reset & Base Styles */
         * {
@@ -25,63 +27,36 @@
             line-height: 1.6;
             padding-bottom: 40px;
         }
-
         /* Navigation Bar */
         .navbar {
             width: 100%;
             background: #fff;
-            padding: 0px;
+            padding: 10px;
             box-shadow: 0 2px 5px rgba(0,0,0,0.1);
             text-align: center;
-            font-size: 24px;
-            font-weight: bold;
-            position: relative;
+            font-size: 16px;
+            position: sticky;
             top: 0;
             z-index: 1000;
         }
-
         /* Main Container */
         .container {
             width: 90%;
             max-width: 1200px;
             margin: 40px auto;
             display: flex;
-            justify-content: space-between;
+            flex-wrap: wrap;
             gap: 30px;
+            justify-content: center;
         }
-
-        .budget-expense {
-            display: flex;
-            justify-content: space-between;
-            width: 100%;
-            gap: 20px;
-        }
-
+        /* Box Styling for Forms */
         .box {
             background: #fff;
             border-radius: 10px;
             box-shadow: 0 2px 10px rgba(0,0,0,0.1);
             padding: 30px;
-            flex: 1;
-            max-width: 45%;
-            min-width: 300px;
-        }
-
-        .summary {
-            width: 70%;
-            max-width: 600px;
-            background: #4a6cf7;
-            color: #fff;
-            display: flex;
-            justify-content: space-around;
-            align-items: center;
-            padding: 20px;
-            border-radius: 10px;
-            font-size: 18px;
-            text-align: center;
-            margin: 20px auto; /* Centrerar rutan med ett avstånd */
-            height: 120px; /* Definiera en specifik höjd */
-
+            flex: 1 1 300px;
+            max-width: 450px;
         }
 
         form h2 {
@@ -130,10 +105,24 @@
         form button:hover {
             opacity: 0.9;
         }
-
+        /* Summary Section */
+        .summary {
+            width: 90%;
+            max-width: 1200px;
+            background: #4a6cf7;
+            color: #fff;
+            display: flex;
+            justify-content: space-around;
+            align-items: center;
+            padding: 20px;
+            border-radius: 10px;
+            margin: 20px auto;
+            font-size: 18px;
+        }
         /* Expenses List */
         .expenses-list {
-            width: 100%;
+            width: 90%;
+            max-width: 1200px;
             background: #fff;
             padding: 20px;
             border-radius: 10px;
@@ -141,67 +130,55 @@
             margin: 20px auto;
         }
 
-        .expense-row {
-            display: flex;
-            justify-content: space-between;
-            padding: 10px 0;
+            .expenses-list h2 {
+                margin-bottom: 20px;
+                font-size: 22px;
+                text-align: center;
+            }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        th, td {
+            text-align: left;
+            padding: 15px;
             border-bottom: 1px solid #f2f2f2;
         }
 
-            .expense-row.header {
-                font-weight: bold;
-                background-color: #f9f9f9;
-            }
-
-        .expense-category,
-        .expense-amount,
-        .expense-actions {
-            width: 33%;
-            text-align: left;
-            padding: 10px;
+        th {
+            background: #f9f9f9;
         }
 
-        .expense-actions {
-            text-align: center;
+        .icons {
+            display: flex;
+            gap: 15px;
+            justify-content: center;
         }
 
-            .expense-actions i {
+            .icons i {
                 cursor: pointer;
                 font-size: 20px;
                 transition: color 0.3s;
             }
 
-                .expense-actions i:hover {
+                .icons i:hover {
                     color: #dc3545;
                 }
-
+        /* Footer */
         .footer {
             text-align: center;
-            padding: 10px;
+            padding: 20px;
             color: #777;
             margin-top: 40px;
-            border: none;
-            height: 120px; /* Definiera en specifik höjd */
         }
-
-        .btn-logout {
-            background-color: #dc3545; /* Röd färg */
-            color: white;
-            padding: 10px 20px;
-            border: none;
-            border-radius: 5px;
-            cursor: pointer;
-            font-size: 16px;
-            transition: background-color 0.3s;
-        }
-
-            .btn-logout:hover {
-                background-color: #c82333; /* Mörkare röd vid hover */
-            }
-
     </style>
 </head>
 <body>
+    <div class="navbar">
+        BudgetHelper
+    </div>
 
     <div class="container">
         <!-- Budget Setup Form -->
@@ -212,12 +189,6 @@
                 <input type="number" placeholder="Enter Budget" asp-for="Budget" id="budget" name="budget" required>
                 <button type="submit" class="btn-primary">Set Budget</button>
             </form>
-        </div>
-
-        <div class="summary">
-            <div>Total Budget: 10000</div>
-            <div>Expenses: 4300</div>
-            <div>Balance: 5700</div>
         </div>
 
         <div class="box">
@@ -272,58 +243,6 @@
             }
         </div>
 
-<<<<<<< HEAD
-    <div class="expenses-list">
-        <h2>Expenses List</h2>
-        <div class="expense-row header">
-            <div class="expense-category">Category</div>
-            <div class="expense-amount">Amount</div>
-            <div class="expense-actions">Actions</div>
-        </div>
-
-        <div class="expense-row">
-            <div class="expense-category">Food</div>
-            <div class="expense-amount">1000</div>
-            <div class="expense-actions">
-                <i class='bx bx-edit'></i>
-                <i class='bx bx-trash'></i>
-            </div>
-        </div>
-
-        <div class="expense-row">
-            <div class="expense-category">Car</div>
-            <div class="expense-amount">1500</div>
-            <div class="expense-actions">
-                <i class='bx bx-edit'></i>
-                <i class='bx bx-trash'></i>
-            </div>
-        </div>
-
-        <div class="expense-row">
-            <div class="expense-category">Rent</div>
-            <div class="expense-amount">600</div>
-            <div class="expense-actions">
-                <i class='bx bx-edit'></i>
-                <i class='bx bx-trash'></i>
-            </div>
-        </div>
-
-        <div class="expense-row">
-            <div class="expense-category">Travel</div>
-            <div class="expense-amount">1200</div>
-            <div class="expense-actions">
-                <i class='bx bx-edit'></i>
-                <i class='bx bx-trash'></i>
-            </div>
-        </div>
-    </div>
-
-    <!-- Other content above -->
-
-    <div class="footer">
-        <button class="btn-logout">Log Out</button>
-    </div>
-=======
 
     <!-- Summary Section: Displays Budget, Total Expenses, and Calculated Balance -->
     <div class="summary">
@@ -376,71 +295,100 @@
 
         </table>
     </div>
-
+        <!-- Category Expenses -->
+        <div class="expenses-list">
+            <h2>Expenses by Category</h2>
+            <table>
+                <tr>
+                    <th>Category</th>
+                    <th>Total Amount</th>
+                    <th>Percentage of Budget</th>
+                </tr>
+                @{
+                    var categoryExpenses = Model.GetExpensesByCategory();
+                    foreach (var category in categoryExpenses)
+                    {
+                        var percentage = Model.Budget > 0 ? (category.Value / Model.Budget * 100).ToString("0.0") : "0";
+                        <tr>
+                            <td>@category.Key</td>
+                            <td>@category.Value kr</td>
+                            <td>@percentage%</td>
+                        </tr>
+                    }
+                }
+            </table>
+        </div>
 
         <!-- Pie Chart för Budget -->
         <div class="chart-container" style="width: 50%; margin: auto; padding-top: 40px;">
-            <h2 style="text-align: center;">Budgetfördelning</h2>
+            <h2 style="text-align: center;"></h2>
             <canvas id="budgetChart"></canvas>
         </div>
 
 
-        <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
         <script>
             document.addEventListener("DOMContentLoaded", async function () {
-                console.log(" Pie Chart laddas...");
+                console.log("Pie Chart laddas...");
 
-                // Hämta budgetdata från backend
+                // Hämta data från backend 
                 async function fetchBudgetData() {
                     try {
                         const response = await fetch('/api/budget');
                         if (!response.ok) {
-                            throw new Error("Kunde inte hämta budgetdata");
+                            throw new Error("Could not fetch budget data");
                         }
                         return await response.json();
                     } catch (error) {
-                        console.error(" Fel vid hämtning av budgetdata:", error);
-                        return { budgetAmount: 0, totalExpenses: 0 };
+                        console.error("Error fetching budget data:", error);
+                        return { categories: [], totalBudget: 0 };
                     }
                 }
 
-                // Skapa Pie Chart
+                // Skapa pie chart
                 async function createChart() {
                     const data = await fetchBudgetData();
+                    const categories = data.categories;
+                    const totalBudget = data.totalBudget;
 
-                    const totalBudget = data.budgetAmount;
-                    const totalExpenses = data.totalExpenses;
-                    const remainingBudget = totalBudget - totalExpenses;
+					// Extrahera labels och amounts från kategorierna
+                    const labels = categories.map(category => category.name);
+                    const amounts = categories.map(category => category.amount);
+                    const remainingBudget = totalBudget - amounts.reduce((a, b) => a + b, 0);
 
+					// Skapa pie chart
                     const ctx = document.getElementById('budgetChart').getContext('2d');
-
                     new Chart(ctx, {
                         type: 'pie',
                         data: {
-                    labels: ['Utgifter', 'Kvarvarande Budget'],
-                    datasets: [{
-                        data: [totalExpenses, remainingBudget],
-                        backgroundColor: ['#ff6384', '#36a2eb'], //Ändra färg
-                        borderColor: ['#ff3b60', '#2a82c8'], // Kantlinjefärg
-                        borderWidth: 2
-                    }]
+                            labels: [...labels, 'Remaining Budget'], // Budget label
+                            datasets: [{
+                                data: [...amounts, remainingBudget], // Budget amounts
+                                backgroundColor: [
+                                    '#ff6384', '#36a2eb', '#ffcd56', '#4bc0c0', '#9966ff' // Färger
+                                ],
+                                borderColor: [
+                                    '#ff3b60', '#2a82c8', '#ffb347', '#4fbfbf', '#8f5fff' // Border color
+                                ],
+                                borderWidth: 2
+                            }]
                         },
                         options: {
                             responsive: true,
                             plugins: {
                                 legend: { position: 'top' },
-                                title: { display: true, text: 'Budgetfördelning' }
+                                title: { display: true, text: 'Budget' }
                             }
                         }
                     });
 
-                    console.log("Pie Chart!");
+                    console.log("Pie chart skapad!");
                 }
 
                 createChart();
             });
         </script>
->>>>>>> e689cc8d7415c5f15a42130793946f2d01a9159b
+
+
 
 </body>
 </html>

@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
+
 namespace BudgetApp.Pages
 {
     public class MainpageModel : PageModel
@@ -29,6 +30,14 @@ namespace BudgetApp.Pages
 
         [BindProperty]
         public Expense EditExpense { get; set; } = new();
+
+        public Dictionary<string, decimal> GetExpensesByCategory()
+        {
+            return Expenses
+                .GroupBy(e => e.Category.Name)
+                .ToDictionary(g => g.Key, g => g.Sum(e => e.Amount));
+        }
+
 
 
         public async Task OnGetAsync()
@@ -179,7 +188,7 @@ namespace BudgetApp.Pages
 
 
 
-        //
+        //Metod för att uppdatera expense
         public async Task<IActionResult> OnPostUpdateExpenseAsync()
         {
             var userId = _signInManager.UserManager.GetUserId(User);
@@ -208,7 +217,7 @@ namespace BudgetApp.Pages
             expense.Name = EditExpense.Name;
             expense.Amount = EditExpense.Amount;
             expense.CategoryId = EditExpense.CategoryId;
-            expense.Date = DateTime.Now;
+            //expense.Date = DateTime.Now;
 
             await _context.SaveChangesAsync();
             return RedirectToPage();
