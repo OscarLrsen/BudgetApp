@@ -12,6 +12,7 @@
     <link href="https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
+
     <style>
         /* Reset & Base Styles */
         * {
@@ -173,9 +174,28 @@
             color: #777;
             margin-top: 40px;
         }
+
+        /* Justera storleken på loggan */
+        .logo {
+            width: 100px; /* Minska bredden */
+            height: auto; /* Behåll proportionerna */
+        }
+
+        /* Container för loggan */
+        .main-container {
+            display: flex;
+            justify-content: center; /* Horisontellt centrera */
+            align-items: center; /* Vertikalt centrera */
+            height: 10vh; /* Full höjd på skärmen */
+        }
+
+
     </style>
 </head>
 <body>
+    <div class="main-container">
+    <img src="~/images/logo.png" alt="BudgetWise Logo" class="logo">
+    </div>
 
         <div class="container">
         <!-- Budget Setup Form -->
