@@ -229,6 +229,30 @@ namespace BudgetApp.Pages
             return RedirectToPage();
         }
 
+        //Tar bort lagd budget och tillagda expenses
+        public async Task<IActionResult> OnPostDeleteAllAsync()
+        {
+            var userId = _signInManager.UserManager.GetUserId(User);
+            if (string.IsNullOrEmpty(userId))
+            {
+                return Challenge();
+            }
+
+            // Ta bort alla expenses för användaren
+            var userExpenses = _context.Expenses.Where(e => e.UserId == userId);
+            _context.Expenses.RemoveRange(userExpenses);
+
+            // Ta bort användarens budget
+            var userBudget = await _context.UserBudgets.FirstOrDefaultAsync(b => b.UserId == userId);
+            if (userBudget != null)
+            {
+                _context.UserBudgets.Remove(userBudget);
+            }
+
+            await _context.SaveChangesAsync();
+            return RedirectToPage();
+        }
+
 
 
 
