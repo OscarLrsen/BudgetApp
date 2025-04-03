@@ -6,14 +6,7 @@
     <ImplicitUsings>enable</ImplicitUsings>
     <UserSecretsId>aspnet-BudgetApp-764e2c66-c264-4e9f-85f1-c05a5f988862</UserSecretsId>
   </PropertyGroup>
-
-  <ItemGroup>
-    <Compile Remove="Blazor-Demo\**" />
-    <Content Remove="Blazor-Demo\**" />
-    <EmbeddedResource Remove="Blazor-Demo\**" />
-    <None Remove="Blazor-Demo\**" />
-  </ItemGroup>
-
+  
   <ItemGroup>
     <PackageReference Include="Microsoft.AspNetCore.Diagnostics.EntityFrameworkCore" Version="8.0.13" />
     <PackageReference Include="Microsoft.AspNetCore.Identity.EntityFrameworkCore" Version="8.0.13" />
@@ -29,7 +22,9 @@
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
       <PrivateAssets>all</PrivateAssets>
     </PackageReference>
+    <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.12.0" />
     <PackageReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Design" Version="8.0.7" />
+    
   </ItemGroup>
 
 </Project>
