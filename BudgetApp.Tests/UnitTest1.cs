@@ -5,16 +5,16 @@ using Microsoft.EntityFrameworkCore;
 using Xunit;
 
 namespace BudgetApp.Tests{
-    // Simple test models
+    // Mockdata för att simulera en databas
     public class Expense
     {
         public int Id { get; set; }
-        public string Name { get; set; } = string.Empty;  // Initialize to avoid nullability warnings
+        public string Name { get; set; } = string.Empty;  
         public decimal Amount { get; set; }
         public int CategoryId { get; set; }
         public string UserId { get; set; } = string.Empty;
         public DateTime Date { get; set; }
-        public Category? Category { get; set; }  // Make nullable to avoid warnings
+        public Category? Category { get; set; }  
     }
 
     public class Category
@@ -30,7 +30,7 @@ namespace BudgetApp.Tests{
         public decimal Amount { get; set; }
     }
 
-    // Test database context
+
     public class TestDbContext : DbContext
     {
         public TestDbContext(DbContextOptions<TestDbContext> options) : base(options) { }
@@ -40,7 +40,7 @@ namespace BudgetApp.Tests{
         public DbSet<UserBudget> UserBudgets { get; set; } = null!;
     }
 
-    // Basic test class - simplified for clarity
+    
     public class BasicBudgetTests
     {
         private readonly TestDbContext _context;
@@ -55,7 +55,6 @@ namespace BudgetApp.Tests{
             
             _context = new TestDbContext(options);
             
-            // Add test categories
             _context.Categories.Add(new Category { Id = 1, Name = "Food" });
             _context.Categories.Add(new Category { Id = 2, Name = "Entertainment" });
             _context.SaveChanges();
@@ -81,16 +80,16 @@ namespace BudgetApp.Tests{
         [Fact]
         public void Test_AddExpense_ShouldCreateExpenseAndUpdateTotal()
         {
-            // Arrange - Create budget first
+            // Arrange - Skapa budget för användaren
             _context.UserBudgets.Add(new UserBudget { UserId = _userId, Amount = 5000 });
             _context.SaveChanges();
             
-            // Act - Add expense
+            // Act - Lägg till en utgift
             var expense = new Expense
             {
                 Name = "Groceries",
                 Amount = 500,
-                CategoryId = 1, // Food
+                CategoryId = 1, // Kategori: food
                 UserId = _userId,
                 Date = DateTime.Now
             };
@@ -98,17 +97,17 @@ namespace BudgetApp.Tests{
             _context.Expenses.Add(expense);
             _context.SaveChanges();
             
-            // Assert
+            // Assert - Kontrollera att utgiften sparades korrekt
             var savedExpense = _context.Expenses.FirstOrDefault(e => e.UserId == _userId);
             Assert.NotNull(savedExpense);
             Assert.Equal("Groceries", savedExpense.Name);
             Assert.Equal(500, savedExpense.Amount);
             
-            // Calculate total expenses
+            // Calculate total expenses för användaren
             var totalExpenses = _context.Expenses.Where(e => e.UserId == _userId).Sum(e => e.Amount);
             Assert.Equal(500, totalExpenses);
             
-            // Calculate balance
+            // Kontrollera att budgeten uppdaterades korrekt
             var budget = _context.UserBudgets.First(b => b.UserId == _userId).Amount;
             var balance = budget - totalExpenses;
             Assert.Equal(4500, balance);
@@ -119,7 +118,7 @@ namespace BudgetApp.Tests{
         [Fact]
         public void Test_EditExpense_ShouldUpdateExpenseDetails()
     {
-    // Arrange - Add an initial expense
+    // Arrange - lägg till en utgift att redigera
     _context.UserBudgets.Add(new UserBudget { UserId = _userId, Amount = 5000 });
     var expense = new Expense
     {
@@ -132,7 +131,7 @@ namespace BudgetApp.Tests{
     _context.Expenses.Add(expense);
     _context.SaveChanges();
     
-    // Act - Update the expense
+    // Act - updatera utgiften
     var expenseToUpdate = _context.Expenses.First(e => e.UserId == _userId);
     expenseToUpdate.Name = "Dining Out";
     expenseToUpdate.Amount = 750;
@@ -145,14 +144,14 @@ namespace BudgetApp.Tests{
     Assert.Equal(750, updatedExpense.Amount);
     Assert.Equal(2, updatedExpense.CategoryId);
     
-    // Check total expenses
+    // Kolla total utgifter
     var totalExpenses = _context.Expenses.Where(e => e.UserId == _userId).Sum(e => e.Amount);
     Assert.Equal(750, totalExpenses);
     }
     [Fact]
 public void Test_DeleteExpense_ShouldRemoveExpenseAndUpdateTotal()
 {
-    // Arrange - Add an expense to delete
+    // Arrange - Lägg till expense att ta bort
     _context.UserBudgets.Add(new UserBudget { UserId = _userId, Amount = 5000 });
     var expense = new Expense
     {
@@ -165,7 +164,7 @@ public void Test_DeleteExpense_ShouldRemoveExpenseAndUpdateTotal()
     _context.Expenses.Add(expense);
     _context.SaveChanges();
     
-    // Act - Delete the expense
+    // Act - Ta bort en expense
     var expenseToDelete = _context.Expenses.First(e => e.UserId == _userId);
     _context.Expenses.Remove(expenseToDelete);
     _context.SaveChanges();
@@ -174,7 +173,7 @@ public void Test_DeleteExpense_ShouldRemoveExpenseAndUpdateTotal()
     var deletedExpense = _context.Expenses.FirstOrDefault(e => e.UserId == _userId);
     Assert.Null(deletedExpense);
     
-    // Check total expenses
+    // Kolla total expenses
     var totalExpenses = _context.Expenses.Where(e => e.UserId == _userId).Sum(e => e.Amount);
     Assert.Equal(0, totalExpenses);
 }

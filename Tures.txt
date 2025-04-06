@@ -1,0 +1,2 @@
+Hej detta är repot till mitt projektarbete i Testningskursen.
+Själva testningen hittar du här: /BudgetApp/BudgetApp.Tests
