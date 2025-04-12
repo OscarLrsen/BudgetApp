@@ -1,9 +1,10 @@
 ﻿using BudgetApp.Data;
 using BudgetApp.Models;
 using Microsoft.AspNetCore.Identity;
-using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+
 
 namespace BudgetApp.Pages
 {
@@ -13,16 +14,13 @@ namespace BudgetApp.Pages
         private readonly ApplicationDbContext _context;
         private readonly SignInManager<IdentityUser> _signInManager;
 
-        public MainpageModel(
-            ApplicationDbContext context,
-            SignInManager<IdentityUser> signInManager
-        )
+        public MainpageModel(ApplicationDbContext context, SignInManager<IdentityUser> signInManager)
         {
             _context = context;
             _signInManager = signInManager;
         }
 
-        // Properties för att ladda data från db och visa i vyn
+        // Properties för att ladda data från db och visa i vyn 
         public List<Category> Categories { get; set; } = new();
         public List<Expense> Expenses { get; set; } = new();
 
@@ -40,6 +38,8 @@ namespace BudgetApp.Pages
                 .ToDictionary(g => g.Key, g => g.Sum(e => e.Amount));
         }
 
+
+
         public async Task OnGetAsync()
         {
             // Laddar kategorier för dropdown.
@@ -53,18 +53,16 @@ namespace BudgetApp.Pages
             }
 
             // Ladda expenses från databasen
-            Expenses = await _context
-                .Expenses.Where(e => e.UserId == userId)
-                .Include(e => e.Category)
-                .ToListAsync();
+            Expenses = await _context.Expenses
+                                     .Where(e => e.UserId == userId)
+                                     .Include(e => e.Category)
+                                     .ToListAsync();
 
             // kalkulerar totalbelopp för expenses
             TotalExpenses = Expenses.Sum(e => e.Amount);
 
             // Ladda userbudget från databasen
-            var userBudget = await _context.UserBudgets.FirstOrDefaultAsync(b =>
-                b.UserId == userId
-            );
+            var userBudget = await _context.UserBudgets.FirstOrDefaultAsync(b => b.UserId == userId);
             if (userBudget != null)
             {
                 Budget = userBudget.Amount;
@@ -79,10 +77,8 @@ namespace BudgetApp.Pages
             {
                 return Challenge();
             }
-
-            var userBudget = await _context.UserBudgets.FirstOrDefaultAsync(b =>
-                b.UserId == userId
-            );
+            
+            var userBudget = await _context.UserBudgets.FirstOrDefaultAsync(b => b.UserId == userId);
             if (userBudget == null)
             {
                 userBudget = new UserBudget { UserId = userId, Amount = budget };
@@ -96,13 +92,8 @@ namespace BudgetApp.Pages
             await _context.SaveChangesAsync();
             return RedirectToPage();
         }
-
         // Metod för att lägga till en ny utgift
-        public async Task<IActionResult> OnPostAddExpenseAsync(
-            string expenseName,
-            decimal expenseAmount,
-            int expenseCategory
-        )
+        public async Task<IActionResult> OnPostAddExpenseAsync(string expenseName, decimal expenseAmount, int expenseCategory)
         {
             var userId = _signInManager.UserManager.GetUserId(User);
             if (string.IsNullOrEmpty(userId))
@@ -116,22 +107,16 @@ namespace BudgetApp.Pages
             // Validera att alla fält är ifyllda och att beloppet är större än 0
             if (string.IsNullOrEmpty(expenseName) || expenseAmount <= 0)
             {
-                ModelState.AddModelError(
-                    string.Empty,
-                    "Alla fält måste vara ifyllda och beloppet måste vara större än 0."
-                );
-                Expenses = await _context
-                    .Expenses.Where(e => e.UserId == userId)
-                    .Include(e => e.Category)
-                    .ToListAsync();
+                ModelState.AddModelError(string.Empty, "Alla fält måste vara ifyllda och beloppet måste vara större än 0.");
+                Expenses = await _context.Expenses.Where(e => e.UserId == userId)
+                                                  .Include(e => e.Category)
+                                                  .ToListAsync();
                 TotalExpenses = Expenses.Sum(e => e.Amount);
                 return Page();
             }
 
             // Validera att kategorin finns
-            var category = await _context.Categories.FirstOrDefaultAsync(c =>
-                c.Id == expenseCategory
-            );
+            var category = await _context.Categories.FirstOrDefaultAsync(c => c.Id == expenseCategory);
             if (category == null)
             {
                 return NotFound();
@@ -144,7 +129,7 @@ namespace BudgetApp.Pages
                 Amount = expenseAmount,
                 Date = DateTime.Now,
                 CategoryId = category.Id,
-                UserId = userId,
+                UserId = userId
             };
             // Lägger till utgiften i databasen
             _context.Expenses.Add(expense);
@@ -152,7 +137,6 @@ namespace BudgetApp.Pages
 
             return RedirectToPage();
         }
-
         //Metod för att ta bort en utgift
         public async Task<IActionResult> OnPostDeleteExpenseAsync(int expenseId)
         {
@@ -162,9 +146,7 @@ namespace BudgetApp.Pages
                 return Challenge();
             }
 
-            var expense = await _context.Expenses.FirstOrDefaultAsync(e =>
-                e.Id == expenseId && e.UserId == userId
-            );
+            var expense = await _context.Expenses.FirstOrDefaultAsync(e => e.Id == expenseId && e.UserId == userId);
             if (expense == null)
             {
                 return NotFound();
@@ -186,28 +168,26 @@ namespace BudgetApp.Pages
 
             // Ladda kategorier och utgifter
             Categories = await _context.Categories.ToListAsync();
-            Expenses = await _context
-                .Expenses.Where(e => e.UserId == userId)
-                .Include(e => e.Category)
-                .ToListAsync();
+            Expenses = await _context.Expenses
+                                    .Where(e => e.UserId == userId)
+                                    .Include(e => e.Category)
+                                    .ToListAsync();
 
             //Gör så att budget inte tappar värdet när man trycker edit
-            var userBudget = await _context.UserBudgets.FirstOrDefaultAsync(b =>
-                b.UserId == userId
-            );
+            var userBudget = await _context.UserBudgets.FirstOrDefaultAsync(b => b.UserId == userId);
             if (userBudget != null)
             {
                 Budget = userBudget.Amount;
             }
 
             // Hämta den expense som ska redigeras
-            var expense = await _context.Expenses.FirstOrDefaultAsync(e =>
-                e.Id == expenseId && e.UserId == userId
-            );
+            var expense = await _context.Expenses.FirstOrDefaultAsync(e => e.Id == expenseId && e.UserId == userId);
             if (expense == null)
             {
                 return NotFound();
             }
+
+
 
             EditExpense = expense;
             return Page();
@@ -227,17 +207,12 @@ namespace BudgetApp.Pages
             {
                 ModelState.AddModelError(string.Empty, "Expense Title cannot be empty.");
                 Categories = await _context.Categories.ToListAsync();
-                Expenses = await _context
-                    .Expenses.Where(e => e.UserId == userId)
-                    .Include(e => e.Category)
-                    .ToListAsync();
+                Expenses = await _context.Expenses.Where(e => e.UserId == userId).Include(e => e.Category).ToListAsync();
                 return Page();
             }
 
             // Hitta den befintliga expense-posten
-            var expense = await _context.Expenses.FirstOrDefaultAsync(e =>
-                e.Id == EditExpense.Id && e.UserId == userId
-            );
+            var expense = await _context.Expenses.FirstOrDefaultAsync(e => e.Id == EditExpense.Id && e.UserId == userId);
             if (expense == null)
             {
                 return NotFound();
@@ -268,9 +243,7 @@ namespace BudgetApp.Pages
             _context.Expenses.RemoveRange(userExpenses);
 
             // Ta bort användarens budget
-            var userBudget = await _context.UserBudgets.FirstOrDefaultAsync(b =>
-                b.UserId == userId
-            );
+            var userBudget = await _context.UserBudgets.FirstOrDefaultAsync(b => b.UserId == userId);
             if (userBudget != null)
             {
                 _context.UserBudgets.Remove(userBudget);
@@ -279,5 +252,11 @@ namespace BudgetApp.Pages
             await _context.SaveChangesAsync();
             return RedirectToPage();
         }
+
+
+
+
+
     }
 }
+    
